@@ -1,388 +1,161 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>הזמנת חיתוך</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-  :root {
-    --bg: #f3f1ec;
-    --surface: #ffffff;
-    --surface-2: #eceef1;
-    --border: #d9dce1;
-    --text: #20242b;
-    --text-muted: #6b7280;
-    --accent: #d9622b;
-    --accent-strong: #b84f22;
-    --accent-contrast: #ffffff;
-    --steel: #33526b;
-    --steel-contrast: #ffffff;
-    --success: #1a7f5a;
-    --success-bg: #e4f5ee;
-    --success-border: #b7e2cf;
-    --warning-bg: #fdf1e2;
-    --warning-text: #96450c;
-    --warning-border: #f2d6ad;
-    --danger: #b91c1c;
-    --danger-bg: #fde8e8;
-    --focus-ring: rgba(217, 98, 43, 0.35);
-    --shadow: 0 1px 2px rgba(32, 36, 43, 0.06), 0 4px 14px rgba(32, 36, 43, 0.06);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #14181d;
-      --surface: #1b2027;
-      --surface-2: #232a33;
-      --border: #333c47;
-      --text: #e8eaed;
-      --text-muted: #9aa3af;
-      --accent: #f2793c;
-      --accent-strong: #ffa066;
-      --accent-contrast: #1b1006;
-      --steel: #7fa2bd;
-      --steel-contrast: #0d1720;
-      --success: #3ecf95;
-      --success-bg: #10291f;
-      --success-border: #1f4636;
-      --warning-bg: #3a2712;
-      --warning-text: #f0b169;
-      --warning-border: #5a3d1d;
-      --danger: #f56565;
-      --danger-bg: #3a1414;
-      --focus-ring: rgba(242, 121, 60, 0.4);
-      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.35);
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #14181d;
-    --surface: #1b2027;
-    --surface-2: #232a33;
-    --border: #333c47;
-    --text: #e8eaed;
-    --text-muted: #9aa3af;
-    --accent: #f2793c;
-    --accent-strong: #ffa066;
-    --accent-contrast: #1b1006;
-    --steel: #7fa2bd;
-    --steel-contrast: #0d1720;
-    --success: #3ecf95;
-    --success-bg: #10291f;
-    --success-border: #1f4636;
-    --warning-bg: #3a2712;
-    --warning-text: #f0b169;
-    --warning-border: #5a3d1d;
-    --danger: #f56565;
-    --danger-bg: #3a1414;
-    --focus-ring: rgba(242, 121, 60, 0.4);
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.35);
-  }
-
   * { box-sizing: border-box; }
   body {
     direction: rtl;
-    background: var(--bg);
-    color: var(--text);
-    font-family: "Rubik", system-ui, sans-serif;
+    background: #f3f1ec;
+    color: #20242b;
+    font-family: "Segoe UI", Arial, sans-serif;
     margin: 0;
     padding: 0 16px 48px;
   }
-  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .mono { font-family: "Consolas", "Courier New", monospace; }
 
   .app { max-width: 860px; margin: 0 auto; }
 
-  .app-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 20px 0 16px;
-  }
-  .app-bar__title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 21px;
-    font-weight: 700;
-  }
+  .app-bar { padding: 20px 0 6px; }
+  .app-bar__title { display: flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 700; }
   .app-bar__icon { font-size: 24px; }
-
-  .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 4px;
-  }
-  .tab {
-    appearance: none;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-family: inherit;
-    font-size: 13.5px;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 999px;
-    cursor: pointer;
-  }
-  .tab.active { background: var(--accent); color: var(--accent-contrast); }
-  .tab:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-
-  .view[hidden] { display: none; }
+  .app-bar__hint { font-size: 13px; color: #6b7280; margin: 4px 0 0; }
 
   /* ---------- Global paste zone ---------- */
   .global-paste {
     display: flex;
     align-items: center;
     gap: 14px;
-    background: var(--surface);
-    border: 2px dashed var(--steel);
+    background: #ffffff;
+    border: 2px dashed #33526b;
     border-radius: 14px;
     padding: 16px 18px;
-    margin-bottom: 18px;
+    margin: 16px 0 18px;
     cursor: pointer;
   }
-  .global-paste:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
-  .global-paste.dragover { border-color: var(--accent); background: var(--surface-2); }
+  .global-paste.dragover { border-color: #d9622b; background: #eceef1; }
   .global-paste__icon { font-size: 26px; }
-  .global-paste__text { font-size: 13.5px; color: var(--text-muted); line-height: 1.5; }
-  .global-paste__text strong { color: var(--text); }
+  .global-paste__text { font-size: 13.5px; color: #6b7280; line-height: 1.5; }
+  .global-paste__text strong { color: #20242b; }
 
   /* ---------- Item cards ---------- */
   .items-list { display: flex; flex-direction: column; gap: 14px; }
 
   .item-card {
     position: relative;
-    background: var(--surface);
-    border: 1px solid var(--border);
+    background: #ffffff;
+    border: 1px solid #d9dce1;
     border-radius: 14px;
     padding: 18px 20px 20px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 1px 2px rgba(32,36,43,0.06), 0 4px 14px rgba(32,36,43,0.06);
   }
-  .item-card__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .item-card__num {
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--steel);
-    letter-spacing: 0.02em;
-  }
+  .item-card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .item-card__num { font-weight: 700; font-size: 14px; color: #33526b; letter-spacing: 0.02em; }
 
   .icon-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: none;
-    background: var(--surface-2);
-    color: var(--text-muted);
-    font-size: 13px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; border: none;
+    background: #eceef1; color: #6b7280; font-size: 13px; line-height: 1;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
   }
-  .icon-btn.danger:hover { background: var(--danger-bg); color: var(--danger); }
+  .icon-btn.danger:hover { background: #fde8e8; color: #b91c1c; }
 
-  .field-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  @media (max-width: 620px) {
-    .field-grid { grid-template-columns: 1fr; }
-  }
-  .field { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
-  .field > span { padding-inline-start: 1px; }
+  .field-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+  @media (max-width: 620px) { .field-grid { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: #6b7280; }
 
   select, input[type="text"], input[type="number"], textarea {
-    width: 100%;
-    font-family: inherit;
-    font-size: 14.5px;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    padding: 9px 11px;
+    width: 100%; font-family: inherit; font-size: 14.5px; color: #20242b;
+    background: #fff; border: 1px solid #d9dce1; border-radius: 9px; padding: 9px 11px;
   }
   select:focus, input:focus, textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--focus-ring);
+    outline: none; border-color: #d9622b; box-shadow: 0 0 0 3px rgba(217,98,43,0.25);
   }
 
   .dims-group[hidden] { display: none; }
-  .dims-group {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 12px;
-  }
+  .dims-group { background: #eceef1; border: 1px solid #d9dce1; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
   .dims-row { display: flex; gap: 10px; flex-wrap: wrap; }
   .dims-row .field { flex: 1; min-width: 100px; }
 
   .ocr-toggle-row { display: flex; align-items: center; gap: 10px; }
   .ocr-badge {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--success);
-    background: var(--success-bg);
-    border: 1px solid var(--success-border);
-    border-radius: 999px;
-    padding: 3px 10px;
+    font-size: 12px; font-weight: 600; color: #1a7f5a; background: #e4f5ee;
+    border: 1px solid #b7e2cf; border-radius: 999px; padding: 3px 10px;
   }
   .ocr-badge[hidden] { display: none; }
 
   .ocr-panel[hidden] { display: none; }
-  .ocr-panel {
-    margin-top: 12px;
-    background: var(--surface-2);
-    border: 1px dashed var(--steel);
-    border-radius: 10px;
-    padding: 14px;
-  }
+  .ocr-panel { margin-top: 12px; background: #eceef1; border: 1px dashed #33526b; border-radius: 10px; padding: 14px; }
   .ocr-panel__controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
-  .file-input { flex: 1; min-width: 160px; font-size: 12.5px; color: var(--text-muted); }
+  .file-input { flex: 1; min-width: 160px; font-size: 12.5px; color: #6b7280; }
 
   .paste-zone {
-    text-align: center;
-    border: 1.5px dashed var(--border);
-    border-radius: 8px;
-    padding: 10px;
-    font-size: 12.5px;
-    color: var(--text-muted);
-    cursor: pointer;
-    outline: none;
+    text-align: center; border: 1.5px dashed #d9dce1; border-radius: 8px; padding: 10px;
+    font-size: 12.5px; color: #6b7280; cursor: pointer; outline: none;
   }
-  .paste-zone:focus, .paste-zone.dragover { border-color: var(--accent); background: var(--surface); }
+  .paste-zone:focus, .paste-zone.dragover { border-color: #d9622b; background: #fff; }
 
   .img-preview-wrap[hidden] { display: none; }
   .img-preview-wrap { position: relative; width: fit-content; max-width: 100%; margin-top: 10px; }
-  .img-preview-wrap img { display: block; max-width: 100%; max-height: 180px; border-radius: 8px; border: 1px solid var(--border); }
+  .img-preview-wrap img { display: block; max-width: 100%; max-height: 180px; border-radius: 8px; border: 1px solid #d9dce1; }
   .remove-img-btn {
-    position: absolute;
-    top: -8px;
-    left: -8px;
-    width: 24px;
-    height: 24px;
-    border: none;
-    border-radius: 50%;
-    background: var(--danger);
-    color: #fff;
-    font-size: 13px;
-    line-height: 1;
-    cursor: pointer;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    position: absolute; top: -8px; left: -8px; width: 24px; height: 24px; border: none;
+    border-radius: 50%; background: #b91c1c; color: #fff; font-size: 13px; line-height: 1;
+    cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
 
-  .ocr-status { font-size: 12.5px; color: var(--steel); min-height: 16px; margin-top: 8px; }
+  .ocr-status { font-size: 12.5px; color: #33526b; min-height: 16px; margin-top: 8px; }
   .ocr-warning[hidden] { display: none; }
   .ocr-warning {
-    font-size: 12px;
-    color: var(--warning-text);
-    background: var(--warning-bg);
-    border: 1px solid var(--warning-border);
-    border-radius: 6px;
-    padding: 7px 10px;
-    margin-top: 8px;
+    font-size: 12px; color: #96450c; background: #fdf1e2; border: 1px solid #f2d6ad;
+    border-radius: 6px; padding: 7px 10px; margin-top: 8px;
   }
   .ocr-raw-wrap[hidden] { display: none; }
   .ocr-raw-wrap { margin-top: 10px; }
-  .ocr-raw-wrap label { display: block; font-size: 12px; color: var(--steel); margin-bottom: 4px; }
-  .ocr-raw-wrap textarea {
-    min-height: 80px;
-    max-height: 55vh;
-    overflow-y: auto;
-    resize: vertical;
-  }
+  .ocr-raw-wrap label { display: block; font-size: 12px; color: #33526b; margin-bottom: 4px; }
+  .ocr-raw-wrap textarea { min-height: 80px; max-height: 55vh; overflow-y: auto; resize: vertical; }
 
   /* ---------- Buttons ---------- */
   .btn {
-    appearance: none;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: 9px;
-    padding: 10px 16px;
-    cursor: pointer;
+    appearance: none; border: 1px solid #d9dce1; background: #fff; color: #20242b;
+    font-family: inherit; font-size: 14px; font-weight: 600; border-radius: 9px;
+    padding: 10px 16px; cursor: pointer;
   }
-  .btn:hover { border-color: var(--steel); }
+  .btn:hover { border-color: #33526b; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn--small { font-size: 12.5px; padding: 7px 12px; }
   .btn--ghost { background: transparent; }
-  .btn--accent { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent-strong); }
-  .btn--accent:hover { background: var(--accent-strong); }
-  .btn--success { background: var(--success); color: #fff; border-color: var(--success); }
-  .btn--steel { background: var(--steel); color: var(--steel-contrast); border-color: var(--steel); }
+  .btn--accent { background: #d9622b; color: #fff; border-color: #b84f22; }
+  .btn--accent:hover { background: #b84f22; }
+  .btn--success { background: #1a7f5a; color: #fff; border-color: #1a7f5a; }
+  .btn--steel { background: #33526b; color: #fff; border-color: #33526b; }
 
   .office-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
-  .office-status { margin-top: 10px; font-size: 13px; color: var(--text-muted); min-height: 18px; }
+  .office-status { margin-top: 10px; font-size: 13px; color: #6b7280; min-height: 18px; }
 
-  /* ---------- Worker view ---------- */
-  .worker-section { margin-bottom: 28px; }
-  .worker-section__title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 16px;
-    margin: 0 0 12px;
-  }
-  .count-pill {
-    background: var(--accent);
-    color: var(--accent-contrast);
-    font-size: 12.5px;
-    font-weight: 700;
-    border-radius: 999px;
-    padding: 2px 10px;
-  }
+  /* ---------- Print summary ---------- */
+  #printSummary { display: none; }
+  .print-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  .print-table th, .print-table td { border: 1px solid #333; padding: 8px 10px; text-align: right; }
+  .print-table th { background: #eee; }
+  .print-meta { font-size: 13px; color: #444; margin-bottom: 4px; }
 
-  .ticket-list { display: flex; flex-direction: column; gap: 10px; }
-  .ticket {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-inline-start: 5px solid var(--accent);
-    border-radius: 12px;
-    padding: 14px 16px;
-    box-shadow: var(--shadow);
-  }
-  .ticket--done { border-inline-start-color: var(--success); opacity: 0.85; }
-  .ticket__body { display: flex; flex-direction: column; gap: 3px; }
-  .ticket__title { font-weight: 700; font-size: 15px; }
-  .ticket__meta { font-size: 13px; color: var(--text-muted); }
-  .ticket__dims { font-size: 13.5px; }
-
-  .empty-state[hidden] { display: none; }
-  .empty-state { text-align: center; color: var(--text-muted); padding: 18px; font-size: 13.5px; background: var(--surface); border: 1px dashed var(--border); border-radius: 12px; }
-
-  @media (max-width: 480px) {
-    .ticket { flex-direction: column; align-items: stretch; }
+  @media print {
+    .screen-only { display: none !important; }
+    #printSummary { display: block !important; }
   }
 </style>
+</head>
+<body>
 
 <div class="app">
-  <header class="app-bar">
-    <div class="app-bar__title">
-      <span class="app-bar__icon">🔩</span>
-      <span>הזמנת חיתוך</span>
-    </div>
-    <div class="tabs" role="tablist">
-      <button type="button" class="tab active" data-tab="office" role="tab" aria-selected="true">משרד · הזנת פריטים</button>
-      <button type="button" class="tab" data-tab="worker" role="tab" aria-selected="false">עובד חיתוך · ביצוע</button>
-    </div>
-  </header>
+  <div class="screen-only">
+    <header class="app-bar">
+      <div class="app-bar__title"><span class="app-bar__icon">🔩</span><span>הזמנת חיתוך</span></div>
+      <p class="app-bar__hint">מלא עד 10 פריטים (עם זיהוי אוטומטי מתמונה), ואז הדפס את הרשימה לעובד החיתוך. שום דבר לא נשמר בענן - הכול נשאר במחשב הזה.</p>
+    </header>
 
-  <main class="view" data-view="office">
     <div class="global-paste" id="globalPaste" tabindex="0">
       <div class="global-paste__icon">📋</div>
       <div class="global-paste__text">
@@ -394,64 +167,25 @@
 
     <div class="office-actions">
       <button type="button" class="btn btn--ghost" id="addRowBtn">➕ הוסף פריט</button>
-      <button type="button" class="btn btn--accent" id="submitBtn">📤 שלח לעובד החיתוך</button>
+      <button type="button" class="btn btn--accent" id="printBtn">🖨️ הדפס רשימה לחיתוך</button>
+      <button type="button" class="btn btn--ghost" id="copyBtn">📋 העתק כטקסט</button>
+      <button type="button" class="btn btn--ghost" id="resetBtn">🗑️ התחלה מחדש</button>
     </div>
     <div class="office-status" id="officeStatus" role="status"></div>
-  </main>
+  </div>
 
-  <main class="view" data-view="worker" hidden>
-    <section class="worker-section">
-      <h2 class="worker-section__title">ממתינים לחיתוך <span class="count-pill" id="pendingCount">0</span></h2>
-      <div class="ticket-list" id="pendingList"></div>
-      <p class="empty-state" id="pendingEmpty" hidden>אין פריטים ממתינים כרגע.</p>
-    </section>
-    <section class="worker-section">
-      <h2 class="worker-section__title">בוצעו לאחרונה</h2>
-      <div class="ticket-list ticket-list--done" id="doneList"></div>
-      <p class="empty-state" id="doneEmpty" hidden>עוד לא בוצעו פריטים.</p>
-    </section>
-  </main>
+  <div id="printSummary">
+    <h1>רשימת פריטים לחיתוך</h1>
+    <div class="print-meta" id="printDate"></div>
+    <table class="print-table">
+      <thead><tr><th>#</th><th>צורה</th><th>חומר</th><th>מידות</th><th>מס' יחידות</th></tr></thead>
+      <tbody id="printTableBody"></tbody>
+    </table>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
 <script>
-  // ============================================================
-  // db capability
-  // ============================================================
-  let db = null;
-  const dbReady = (async () => {
-    if (typeof window.claude === 'undefined') return null;
-    try { return await window.claude.use('db'); } catch (e) { return null; }
-  })();
-  dbReady.then((resolved) => {
-    db = resolved;
-    if (!db) {
-      officeStatus.textContent = 'שים לב: העמוד נפתח ללא חיבור למסד הנתונים המשותף (למשל כקובץ מקומי). אפשר למלא פריטים, אך לא לשלוח אותם לעובד. פתח את הקישור המפורסם כדי שהשליחה תעבוד.';
-      submitBtn.disabled = true;
-    }
-  });
-
-  // ============================================================
-  // Tabs
-  // ============================================================
-  const tabs = document.querySelectorAll('.tab');
-  const views = document.querySelectorAll('.view');
-  let workerViewInitialized = false;
-
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-      tabs.forEach((t) => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-      const target = tab.dataset.tab;
-      views.forEach((v) => { v.hidden = v.dataset.view !== target; });
-      if (target === 'worker' && !workerViewInitialized) {
-        workerViewInitialized = true;
-        initWorkerView();
-      }
-    });
-  });
-
   // ============================================================
   // OCR: pure helpers (image preprocessing / recognition / parsing)
   // ============================================================
@@ -568,10 +302,16 @@
   function detectShapeFromText(text) {
     const lines = text.split('\n');
     const labeledLines = lines.filter((l) => /אפיון|מפרט\s*טכני/.test(l));
-    const searchIn = labeledLines.length ? labeledLines.join('\n') : text;
-
-    if (/BAR[-\s]?RND|BAR[-\s]?ROUND|עגול|מוט/.test(searchIn)) return 'מוט';
-    if (/\bPLATE\b|\bSHEET\b|BAR[-\s]?SQ|פלטה|לוח|ריבוע|מלבן/.test(searchIn)) return 'פלטה';
+    // Try the labeled field first (most reliable when OCR keeps it intact),
+    // but always fall back to the whole text - OCR often splits a table row
+    // so the shape keyword ends up on a line that doesn't itself match
+    // "אפיון"/"מפרט טכני", and searching only the labeled line would then
+    // miss it even though it's clearly present elsewhere in the text.
+    const candidates = labeledLines.length ? [labeledLines.join('\n'), text] : [text];
+    for (const candidate of candidates) {
+      if (/BAR[-\s]?RND|BAR[-\s]?ROUND|עגול|מוט/.test(candidate)) return 'מוט';
+      if (/\bPLATE\b|\bSHEET\b|BAR[-\s]?SQ|פלטה|לוח|ריבוע|מלבן/.test(candidate)) return 'פלטה';
+    }
     return null;
   }
 
@@ -592,14 +332,15 @@
   }
 
   // ============================================================
-  // Item rows (office view)
+  // Item rows
   // ============================================================
   const MAX_ROWS = 10;
-  let rowSeq = 0;
   const rows = [];
   const itemsList = document.getElementById('itemsList');
   const addRowBtn = document.getElementById('addRowBtn');
-  const submitBtn = document.getElementById('submitBtn');
+  const printBtn = document.getElementById('printBtn');
+  const copyBtn = document.getElementById('copyBtn');
+  const resetBtn = document.getElementById('resetBtn');
   const officeStatus = document.getElementById('officeStatus');
 
   function rowTemplate() {
@@ -669,7 +410,6 @@
 
   function addRow() {
     if (rows.length >= MAX_ROWS) return null;
-    rowSeq += 1;
     const wrap = document.createElement('div');
     wrap.innerHTML = rowTemplate().trim();
     const el = wrap.firstElementChild;
@@ -832,12 +572,6 @@
   async function applyOcrToRow(row, rawText, ocrData, canvas) {
     const text = rawText.replace(/\r/g, '');
 
-    const detectedShape = detectShapeFromText(text);
-    if (detectedShape) {
-      row.fields.shape.value = detectedShape;
-      row.fields.shape.dispatchEvent(new Event('change'));
-    }
-
     const materialMatch = text.match(/AISI\s*[- ]?\s*\d+/i);
     if (materialMatch) {
       row.fields.material.value = materialMatch[0].toUpperCase().replace(/\s+/g, ' ');
@@ -870,6 +604,22 @@
     if (!length) length = findNumberNear(text, 'אורך') || findNumberNear(text, 'ארוך');
     if (!hVal) hVal = findNumberNear(text, ' H ') || findNumberNear(text, 'גובה');
     if (!wVal) wVal = findNumberNear(text, ' W ') || findNumberNear(text, 'רוחב');
+
+    // Decide the shape - prefer the text/code detection, but if that comes up
+    // empty, fall back to WHICH dimension we actually recognized: a diameter
+    // means a round bar, a height/width means a plate. Without this, a
+    // recognized diameter/length can sit correctly in the (hidden) rod
+    // fields while the shape select stays unset, so the dims section never
+    // becomes visible and the values look like they "didn't fill".
+    let shape = detectShapeFromText(text);
+    if (!shape) {
+      if (outerDiameter) shape = 'מוט';
+      else if (hVal || wVal) shape = 'פלטה';
+    }
+    if (shape) {
+      row.fields.shape.value = shape;
+      row.fields.shape.dispatchEvent(new Event('change'));
+    }
 
     if (outerDiameter) row.fields.d.value = outerDiameter;
     if (length) {
@@ -911,8 +661,6 @@
   }
 
   document.addEventListener('paste', function (e) {
-    const officeView = document.querySelector('[data-view="office"]');
-    if (officeView.hidden) return;
     const file = extractImageFromClipboard(e.clipboardData || window.clipboardData);
     if (!file) return;
     e.preventDefault();
@@ -940,7 +688,7 @@
   addRowBtn.addEventListener('click', () => addRow());
 
   // ============================================================
-  // Submit to the shared cutting-items store
+  // Collect valid rows
   // ============================================================
   function collectRowData(row) {
     const shape = row.fields.shape.value;
@@ -948,111 +696,18 @@
     const units = row.fields.units.value;
     if (!shape || !material || !units) return null;
 
-    let dims = {};
     let dimsText = '';
     if (shape === 'פלטה') {
       const h = row.fields.h.value;
       const w = row.fields.w.value;
       const l = row.fields.l_plate.value;
-      dims = { h, w, l };
       dimsText = `H: ${h || '-'} | W: ${w || '-'} | L: ${l || '-'} מ"מ`;
     } else if (shape === 'מוט') {
       const d = row.fields.d.value;
       const l = row.fields.l_rod.value;
-      dims = { d, l };
       dimsText = `קוטר: ${d || '-'} | אורך: ${l || '-'} מ"מ`;
     }
-    return { shape, material, units: Number(units), dims, dimsText };
-  }
-
-  submitBtn.addEventListener('click', async () => {
-    await dbReady;
-    if (!db) {
-      officeStatus.textContent = 'אין חיבור למסד נתונים משותף - פתח את הקישור המפורסם של העמוד (לא קובץ מקומי) כדי לשלוח פריטים.';
-      return;
-    }
-
-    const collected = rows.map(collectRowData).filter(Boolean);
-    if (collected.length === 0) {
-      alert('לא הוזן אף פריט תקין (חובה למלא לפחות צורה, חומר ומס\' יחידות).');
-      return;
-    }
-
-    submitBtn.disabled = true;
-    officeStatus.textContent = 'שולח...';
-    try {
-      const col = db.collection('cutting/items');
-      for (const item of collected) {
-        await col.add({
-          ...item,
-          status: 'pending',
-          createdAt: new Date().toISOString(),
-          doneAt: null
-        });
-      }
-      officeStatus.textContent = `נשלחו ${collected.length} פריטים לעובד החיתוך.`;
-      resetAllRows();
-    } catch (e) {
-      officeStatus.textContent = 'שגיאה בשליחה: ' + (e && e.message ? e.message : String(e));
-    } finally {
-      submitBtn.disabled = false;
-    }
-  });
-
-  // ============================================================
-  // Worker view
-  // ============================================================
-  const pendingList = document.getElementById('pendingList');
-  const pendingEmpty = document.getElementById('pendingEmpty');
-  const pendingCount = document.getElementById('pendingCount');
-  const doneList = document.getElementById('doneList');
-  const doneEmpty = document.getElementById('doneEmpty');
-
-  function renderTickets(container, emptyEl, docs, isDone) {
-    container.innerHTML = '';
-    emptyEl.hidden = docs.length !== 0;
-    docs.forEach((doc) => {
-      const item = doc.data();
-      if (!item) return;
-      const ticket = document.createElement('div');
-      ticket.className = 'ticket' + (isDone ? ' ticket--done' : '');
-      ticket.innerHTML = `
-        <div class="ticket__body">
-          <div class="ticket__title">${escapeHtml(item.shape)} · ${escapeHtml(item.material)}</div>
-          <div class="ticket__dims mono">${escapeHtml(item.dimsText)}</div>
-          <div class="ticket__meta">מס' יחידות: ${escapeHtml(item.units)}</div>
-        </div>
-      `;
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      if (isDone) {
-        btn.className = 'btn btn--small';
-        btn.textContent = '↩ החזר לממתין';
-        btn.addEventListener('click', async () => {
-          btn.disabled = true;
-          try {
-            await db.collection('cutting/items').doc(doc.id).update({ status: 'pending', doneAt: null });
-          } catch (e) {
-            alert('שגיאה בעדכון: ' + (e && e.message ? e.message : String(e)));
-            btn.disabled = false;
-          }
-        });
-      } else {
-        btn.className = 'btn btn--success';
-        btn.textContent = '✔ סימון כבוצע';
-        btn.addEventListener('click', async () => {
-          btn.disabled = true;
-          try {
-            await db.collection('cutting/items').doc(doc.id).update({ status: 'done', doneAt: new Date().toISOString() });
-          } catch (e) {
-            alert('שגיאה בעדכון: ' + (e && e.message ? e.message : String(e)));
-            btn.disabled = false;
-          }
-        });
-      }
-      ticket.appendChild(btn);
-      container.appendChild(ticket);
-    });
+    return { shape, material, units, dimsText };
   }
 
   function escapeHtml(str) {
@@ -1061,34 +716,71 @@
     }[c]));
   }
 
-  async function initWorkerView() {
-    const resolved = await dbReady;
-    if (!resolved) {
-      pendingEmpty.hidden = false;
-      pendingEmpty.textContent = 'אין חיבור למסד הנתונים המשותף בעמוד הזה. פתח את הקישור המפורסם כדי לראות את הפריטים שנשלחו.';
-      doneEmpty.hidden = false;
-      doneEmpty.textContent = 'אין חיבור למסד הנתונים המשותף.';
-      return;
+  function getValidatedItems() {
+    const collected = rows.map(collectRowData).filter(Boolean);
+    if (collected.length === 0) {
+      alert('לא הוזן אף פריט תקין (חובה למלא לפחות צורה, חומר ומס\' יחידות).');
+      return null;
     }
-
-    db.collection('cutting/items').where('status', '==', 'pending').orderBy('createdAt', 'asc').limit(200)
-      .onSnapshot((snap) => {
-        pendingCount.textContent = String(snap.size);
-        renderTickets(pendingList, pendingEmpty, snap.docs, false);
-      }, (err) => {
-        pendingEmpty.hidden = false;
-        pendingEmpty.textContent = 'שגיאה בטעינת פריטים: ' + err.message;
-      });
-
-    db.collection('cutting/items').where('status', '==', 'done').orderBy('doneAt', 'desc').limit(30)
-      .onSnapshot((snap) => {
-        renderTickets(doneList, doneEmpty, snap.docs, true);
-      }, (err) => {
-        doneEmpty.hidden = false;
-        doneEmpty.textContent = 'שגיאה בטעינת פריטים: ' + err.message;
-      });
+    return collected;
   }
+
+  // ============================================================
+  // Print
+  // ============================================================
+  const printDate = document.getElementById('printDate');
+  const printTableBody = document.getElementById('printTableBody');
+
+  printBtn.addEventListener('click', () => {
+    const items = getValidatedItems();
+    if (!items) return;
+
+    printDate.textContent = 'תאריך: ' + new Date().toLocaleString('he-IL');
+    printTableBody.innerHTML = items.map((item, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${escapeHtml(item.shape)}</td>
+        <td>${escapeHtml(item.material)}</td>
+        <td>${escapeHtml(item.dimsText)}</td>
+        <td>${escapeHtml(item.units)}</td>
+      </tr>
+    `).join('');
+
+    window.print();
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    const items = getValidatedItems();
+    if (!items) return;
+
+    const lines = ['רשימת פריטים לחיתוך', ''];
+    items.forEach((item, i) => {
+      lines.push(`פריט ${i + 1}:`);
+      lines.push(`  צורה: ${item.shape}`);
+      lines.push(`  חומר: ${item.material}`);
+      lines.push(`  מידות: ${item.dimsText}`);
+      lines.push(`  מס' יחידות: ${item.units}`);
+      lines.push('');
+    });
+    const text = lines.join('\n');
+
+    try {
+      await navigator.clipboard.writeText(text);
+      officeStatus.textContent = '✅ הועתק ללוח.';
+    } catch (e) {
+      alert('לא ניתן להעתיק אוטומטית. יש להעתיק ידנית:\n\n' + text);
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('לאפס את כל הפריטים ולהתחיל מחדש?')) return;
+    resetAllRows();
+    officeStatus.textContent = '';
+  });
 
   // init
   addRow();
 </script>
+
+</body>
+</html>
