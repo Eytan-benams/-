@@ -1,543 +1,460 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>טופס הזמנת חומר לחיתוך</title>
+<title>הזמנת חיתוך</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-  * {
-    box-sizing: border-box;
+  :root {
+    --bg: #f3f1ec;
+    --surface: #ffffff;
+    --surface-2: #eceef1;
+    --border: #d9dce1;
+    --text: #20242b;
+    --text-muted: #6b7280;
+    --accent: #d9622b;
+    --accent-strong: #b84f22;
+    --accent-contrast: #ffffff;
+    --steel: #33526b;
+    --steel-contrast: #ffffff;
+    --success: #1a7f5a;
+    --success-bg: #e4f5ee;
+    --success-border: #b7e2cf;
+    --warning-bg: #fdf1e2;
+    --warning-text: #96450c;
+    --warning-border: #f2d6ad;
+    --danger: #b91c1c;
+    --danger-bg: #fde8e8;
+    --focus-ring: rgba(217, 98, 43, 0.35);
+    --shadow: 0 1px 2px rgba(32, 36, 43, 0.06), 0 4px 14px rgba(32, 36, 43, 0.06);
   }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14181d;
+      --surface: #1b2027;
+      --surface-2: #232a33;
+      --border: #333c47;
+      --text: #e8eaed;
+      --text-muted: #9aa3af;
+      --accent: #f2793c;
+      --accent-strong: #ffa066;
+      --accent-contrast: #1b1006;
+      --steel: #7fa2bd;
+      --steel-contrast: #0d1720;
+      --success: #3ecf95;
+      --success-bg: #10291f;
+      --success-border: #1f4636;
+      --warning-bg: #3a2712;
+      --warning-text: #f0b169;
+      --warning-border: #5a3d1d;
+      --danger: #f56565;
+      --danger-bg: #3a1414;
+      --focus-ring: rgba(242, 121, 60, 0.4);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181d;
+    --surface: #1b2027;
+    --surface-2: #232a33;
+    --border: #333c47;
+    --text: #e8eaed;
+    --text-muted: #9aa3af;
+    --accent: #f2793c;
+    --accent-strong: #ffa066;
+    --accent-contrast: #1b1006;
+    --steel: #7fa2bd;
+    --steel-contrast: #0d1720;
+    --success: #3ecf95;
+    --success-bg: #10291f;
+    --success-border: #1f4636;
+    --warning-bg: #3a2712;
+    --warning-text: #f0b169;
+    --warning-border: #5a3d1d;
+    --danger: #f56565;
+    --danger-bg: #3a1414;
+    --focus-ring: rgba(242, 121, 60, 0.4);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
   body {
-    font-family: "Segoe UI", Arial, sans-serif;
-    background-color: #f4f5f7;
-    margin: 0;
-    padding: 40px 20px;
     direction: rtl;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Rubik", system-ui, sans-serif;
+    margin: 0;
+    padding: 0 16px 48px;
   }
-  .container {
-    max-width: 620px;
-    margin: 0 auto;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    padding: 32px;
-  }
-  h1 {
-    font-size: 22px;
-    margin-bottom: 6px;
-    color: #1f2937;
-    text-align: center;
-  }
-  h2 {
-    font-size: 18px;
-    color: #1f2937;
-  }
-  .field {
-    margin-bottom: 20px;
-  }
-  label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #374151;
-  }
-  .hint {
-    font-size: 13px;
-    color: #6b7280;
-    margin-bottom: 8px;
-  }
-  select, input[type="text"], input[type="number"] {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 15px;
-    background: #fff;
-  }
-  select:focus, input:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
-  }
-  .dims-group {
-    display: none;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 16px;
-    margin-top: 8px;
-  }
-  .dims-group.active {
-    display: block;
-  }
-  .dims-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .dims-row .sub-field {
-    flex: 1;
-    min-width: 90px;
-  }
-  .dims-row .sub-field label {
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-  button {
-    width: 100%;
-    padding: 12px;
-    background-color: #2563eb;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  button:hover {
-    background-color: #1d4ed8;
-  }
-  button.secondary {
-    background-color: #e5e7eb;
-    color: #374151;
-  }
-  button.secondary:hover {
-    background-color: #d1d5db;
-  }
-  button:disabled {
-    background-color: #cbd5e1;
-    cursor: not-allowed;
-  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
 
-  .item-counter {
-    text-align: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: #4338ca;
-    background: #eef2ff;
-    border-radius: 8px;
-    padding: 8px;
-    margin-bottom: 20px;
-  }
+  .app { max-width: 860px; margin: 0 auto; }
 
-  .action-row {
+  .app-bar {
     display: flex;
-    gap: 10px;
-    margin-top: 8px;
-  }
-  .action-row button {
-    margin-top: 0;
-  }
-
-  .ocr-box {
-    background: #eef2ff;
-    border: 1px dashed #a5b4fc;
-    border-radius: 10px;
-    padding: 18px;
-    margin-bottom: 28px;
-  }
-  .ocr-box h2 {
-    font-size: 16px;
-    margin: 0 0 10px 0;
-    color: #3730a3;
-  }
-  .ocr-controls {
-    display: flex;
-    gap: 10px;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 20px 0 16px;
   }
-  .ocr-controls input[type="file"] {
-    flex: 1;
-    min-width: 180px;
-    font-size: 13px;
+  .app-bar__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 21px;
+    font-weight: 700;
   }
-  .ocr-controls button {
-    width: auto;
-    padding: 10px 16px;
-    font-size: 14px;
-    margin-top: 0;
-    background-color: #4338ca;
+  .app-bar__icon { font-size: 24px; }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px;
   }
-  .ocr-controls button:hover {
-    background-color: #3730a3;
+  .tab {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
   }
-  #imgPreviewWrap {
+  .tab.active { background: var(--accent); color: var(--accent-contrast); }
+  .tab:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+  .view[hidden] { display: none; }
+
+  /* ---------- Global paste zone ---------- */
+  .global-paste {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border: 2px dashed var(--steel);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    cursor: pointer;
+  }
+  .global-paste:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+  .global-paste.dragover { border-color: var(--accent); background: var(--surface-2); }
+  .global-paste__icon { font-size: 26px; }
+  .global-paste__text { font-size: 13.5px; color: var(--text-muted); line-height: 1.5; }
+  .global-paste__text strong { color: var(--text); }
+
+  /* ---------- Item cards ---------- */
+  .items-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .item-card {
     position: relative;
-    display: none;
-    margin-top: 12px;
-    width: fit-content;
-    max-width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px 20px;
+    box-shadow: var(--shadow);
   }
-  #imgPreview {
-    display: block;
-    max-width: 100%;
-    max-height: 220px;
-    border-radius: 8px;
-    border: 1px solid #c7d2fe;
+  .item-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
   }
-  #removeImgBtn {
-    position: absolute;
-    top: -8px;
-    left: -8px;
+  .item-card__num {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--steel);
+    letter-spacing: 0.02em;
+  }
+
+  .icon-btn {
     width: 26px;
     height: 26px;
-    padding: 0;
-    margin: 0;
     border-radius: 50%;
-    background: #dc2626;
-    color: #fff;
-    font-size: 14px;
+    border: none;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    font-size: 13px;
     line-height: 1;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
-  #removeImgBtn:hover {
-    background: #b91c1c;
+  .icon-btn.danger:hover { background: var(--danger-bg); color: var(--danger); }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
   }
-  #ocrStatus {
-    font-size: 13px;
-    color: #4338ca;
-    margin-top: 10px;
-    min-height: 18px;
+  @media (max-width: 620px) {
+    .field-grid { grid-template-columns: 1fr; }
   }
-  #ocrRawWrap {
-    margin-top: 14px;
-    display: none;
-  }
-  #ocrRawWrap label {
-    font-size: 13px;
-    color: #4338ca;
-    margin-bottom: 4px;
-  }
-  #ocrRaw {
+  .field { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+  .field > span { padding-inline-start: 1px; }
+
+  select, input[type="text"], input[type="number"], textarea {
     width: 100%;
-    min-height: 90px;
-    max-height: 60vh;
-    font-size: 13px;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #c7d2fe;
-    direction: rtl;
-    font-family: monospace;
-    resize: vertical;
-    overflow-y: auto;
+    font-family: inherit;
+    font-size: 14.5px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 9px 11px;
   }
-  #ocrApply {
-    margin-top: 10px;
-    background-color: #059669;
+  select:focus, input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--focus-ring);
   }
-  #ocrApply:hover {
-    background-color: #047857;
+
+  .dims-group[hidden] { display: none; }
+  .dims-group {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
   }
-  .ocr-warning {
+  .dims-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .dims-row .field { flex: 1; min-width: 100px; }
+
+  .ocr-toggle-row { display: flex; align-items: center; gap: 10px; }
+  .ocr-badge {
     font-size: 12px;
-    color: #92400e;
-    background: #fffbeb;
-    border: 1px solid #fde68a;
-    border-radius: 6px;
-    padding: 8px 10px;
-    margin-top: 10px;
-    display: none;
+    font-weight: 600;
+    color: var(--success);
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    border-radius: 999px;
+    padding: 3px 10px;
   }
-  #pasteZone {
+  .ocr-badge[hidden] { display: none; }
+
+  .ocr-panel[hidden] { display: none; }
+  .ocr-panel {
     margin-top: 12px;
-    padding: 16px;
+    background: var(--surface-2);
+    border: 1px dashed var(--steel);
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .ocr-panel__controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .file-input { flex: 1; min-width: 160px; font-size: 12.5px; color: var(--text-muted); }
+
+  .paste-zone {
     text-align: center;
-    border: 2px dashed #a5b4fc;
+    border: 1.5px dashed var(--border);
     border-radius: 8px;
-    color: #4338ca;
-    font-size: 14px;
-    background: #f5f5ff;
+    padding: 10px;
+    font-size: 12.5px;
+    color: var(--text-muted);
     cursor: pointer;
     outline: none;
   }
-  #pasteZone:focus {
-    border-color: #4338ca;
-    background: #e9e9ff;
-  }
-  #pasteZone.dragover {
-    border-color: #4338ca;
-    background: #e9e9ff;
+  .paste-zone:focus, .paste-zone.dragover { border-color: var(--accent); background: var(--surface); }
+
+  .img-preview-wrap[hidden] { display: none; }
+  .img-preview-wrap { position: relative; width: fit-content; max-width: 100%; margin-top: 10px; }
+  .img-preview-wrap img { display: block; max-width: 100%; max-height: 180px; border-radius: 8px; border: 1px solid var(--border); }
+  .remove-img-btn {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background: var(--danger);
+    color: #fff;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
 
-  /* Summary */
-  #summarySection {
-    display: none;
+  .ocr-status { font-size: 12.5px; color: var(--steel); min-height: 16px; margin-top: 8px; }
+  .ocr-warning[hidden] { display: none; }
+  .ocr-warning {
+    font-size: 12px;
+    color: var(--warning-text);
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    margin-top: 8px;
   }
-  table.summary-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 16px 0;
+  .ocr-raw-wrap[hidden] { display: none; }
+  .ocr-raw-wrap { margin-top: 10px; }
+  .ocr-raw-wrap label { display: block; font-size: 12px; color: var(--steel); margin-bottom: 4px; }
+  .ocr-raw-wrap textarea {
+    min-height: 80px;
+    max-height: 55vh;
+    overflow-y: auto;
+    resize: vertical;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: inherit;
     font-size: 14px;
+    font-weight: 600;
+    border-radius: 9px;
+    padding: 10px 16px;
+    cursor: pointer;
   }
-  table.summary-table th, table.summary-table td {
-    border: 1px solid #d1d5db;
-    padding: 8px 10px;
-    text-align: right;
-  }
-  table.summary-table th {
-    background: #eef2ff;
-    color: #3730a3;
-  }
-  table.summary-table tr:nth-child(even) {
-    background: #f9fafb;
-  }
-  .summary-actions {
+  .btn:hover { border-color: var(--steel); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn--small { font-size: 12.5px; padding: 7px 12px; }
+  .btn--ghost { background: transparent; }
+  .btn--accent { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent-strong); }
+  .btn--accent:hover { background: var(--accent-strong); }
+  .btn--success { background: var(--success); color: #fff; border-color: var(--success); }
+  .btn--steel { background: var(--steel); color: var(--steel-contrast); border-color: var(--steel); }
+
+  .office-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .office-status { margin-top: 10px; font-size: 13px; color: var(--text-muted); min-height: 18px; }
+
+  /* ---------- Worker view ---------- */
+  .worker-section { margin-bottom: 28px; }
+  .worker-section__title {
     display: flex;
+    align-items: center;
     gap: 10px;
-    flex-wrap: wrap;
+    font-size: 16px;
+    margin: 0 0 12px;
   }
-  .summary-actions button {
-    flex: 1;
-    min-width: 140px;
-    margin-top: 0;
+  .count-pill {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-size: 12.5px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 2px 10px;
   }
-  .empty-state {
-    text-align: center;
-    color: #6b7280;
-    padding: 20px;
-    font-size: 14px;
+
+  .ticket-list { display: flex; flex-direction: column; gap: 10px; }
+  .ticket {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-inline-start: 5px solid var(--accent);
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
   }
-  @media print {
-    .ocr-box, .item-counter, #currentFormWrapper, .summary-actions {
-      display: none !important;
-    }
+  .ticket--done { border-inline-start-color: var(--success); opacity: 0.85; }
+  .ticket__body { display: flex; flex-direction: column; gap: 3px; }
+  .ticket__title { font-weight: 700; font-size: 15px; }
+  .ticket__meta { font-size: 13px; color: var(--text-muted); }
+  .ticket__dims { font-size: 13.5px; }
+
+  .empty-state[hidden] { display: none; }
+  .empty-state { text-align: center; color: var(--text-muted); padding: 18px; font-size: 13.5px; background: var(--surface); border: 1px dashed var(--border); border-radius: 12px; }
+
+  @media (max-width: 480px) {
+    .ticket { flex-direction: column; align-items: stretch; }
   }
 </style>
-</head>
-<body>
 
-<div class="container">
-  <h1>טופס הזמנת חומר לחיתוך</h1>
-  <p class="hint" style="text-align:center;">ניתן למלא מספר פריטים (עד 10) ולסיים עם סיכום מסודר לשליחה לעובד החיתוך</p>
+<div class="app">
+  <header class="app-bar">
+    <div class="app-bar__title">
+      <span class="app-bar__icon">🔩</span>
+      <span>הזמנת חיתוך</span>
+    </div>
+    <div class="tabs" role="tablist">
+      <button type="button" class="tab active" data-tab="office" role="tab" aria-selected="true">משרד · הזנת פריטים</button>
+      <button type="button" class="tab" data-tab="worker" role="tab" aria-selected="false">עובד חיתוך · ביצוע</button>
+    </div>
+  </header>
 
-  <div id="currentFormWrapper">
-
-    <div class="ocr-box">
-      <h2>מילוי אוטומטי מתמונה (OCR)</h2>
-      <p class="hint" style="margin-top:-4px;">ניתן להעלות קובץ, או פשוט להדביק צילום מסך (Ctrl+V) בכל מקום בעמוד</p>
-      <div class="ocr-controls">
-        <input type="file" id="imgInput" accept="image/*">
-        <button type="button" id="runOcrBtn" disabled>זהה טקסט מהתמונה</button>
-      </div>
-      <div id="pasteZone" tabindex="0">לחץ כאן ואז הדבק תמונה (Ctrl+V)</div>
-      <div id="imgPreviewWrap">
-        <img id="imgPreview" alt="תצוגה מקדימה">
-        <button type="button" id="removeImgBtn" title="הסר תמונה" aria-label="הסר תמונה">✕</button>
-      </div>
-      <div id="ocrStatus"></div>
-      <div class="ocr-warning" id="ocrWarning">⚠️ שים לב: יש לבדוק את השדות המספריים (קוטר / אורך) - זיהוי אוטומטי לעולם אינו מובטח ב-100%.</div>
-      <div id="ocrRawWrap">
-        <label for="ocrRaw">טקסט שזוהה (ניתן לתקן ידנית לפני מילוי אוטומטי):</label>
-        <textarea id="ocrRaw"></textarea>
-        <button type="button" id="ocrApply">מלא את הטופס לפי הטקסט</button>
+  <main class="view" data-view="office">
+    <div class="global-paste" id="globalPaste" tabindex="0">
+      <div class="global-paste__icon">📋</div>
+      <div class="global-paste__text">
+        <strong>הדבק תמונה (Ctrl+V)</strong> בכל מקום בעמוד - היא תיכנס אוטומטית לפריט הפנוי הבא ותנסה למלא אותו לפי הצילום
       </div>
     </div>
 
-    <div class="item-counter" id="itemCounterLabel">פריט מספר 1 (עד 10 פריטים)</div>
+    <div class="items-list" id="itemsList"></div>
 
-    <form id="materialForm">
-
-      <div class="field">
-        <label for="shape">צורה</label>
-        <select id="shape" name="shape" required>
-          <option value="">בחר צורה</option>
-          <option value="מוט">מוט</option>
-          <option value="פלטה">פלטה</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="material">חומר</label>
-        <input type="text" id="material" name="material" placeholder="לדוגמה: AISI 303, אלומיניום..." required>
-      </div>
-
-      <div class="field">
-        <label>מידות</label>
-
-        <div class="dims-group" id="dimsPlate">
-          <div class="dims-row">
-            <div class="sub-field">
-              <label for="h_plate">H (גובה)</label>
-              <input type="number" step="any" id="h_plate" name="h_plate">
-            </div>
-            <div class="sub-field">
-              <label for="w_plate">W (רוחב)</label>
-              <input type="number" step="any" id="w_plate" name="w_plate">
-            </div>
-            <div class="sub-field">
-              <label for="l_plate">L (אורך)</label>
-              <input type="number" step="any" id="l_plate" name="l_plate">
-            </div>
-          </div>
-        </div>
-
-        <div class="dims-group" id="dimsRod">
-          <div class="dims-row">
-            <div class="sub-field">
-              <label for="diameter_rod">קוטר</label>
-              <input type="number" step="any" id="diameter_rod" name="diameter_rod">
-            </div>
-            <div class="sub-field">
-              <label for="l_rod">L (אורך)</label>
-              <input type="number" step="any" id="l_rod" name="l_rod">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="units">מס' יחידות</label>
-        <input type="number" id="units" name="units" min="1" required>
-      </div>
-
-    </form>
-
-    <div class="action-row">
-      <button type="button" id="addAnotherBtn">➕ שמור פריט והוסף פריט נוסף</button>
-      <button type="button" id="finishBtn" class="secondary">✅ סיימתי – הצג סיכום</button>
+    <div class="office-actions">
+      <button type="button" class="btn btn--ghost" id="addRowBtn">➕ הוסף פריט</button>
+      <button type="button" class="btn btn--accent" id="submitBtn">📤 שלח לעובד החיתוך</button>
     </div>
-  </div>
+    <div class="office-status" id="officeStatus" role="status"></div>
+  </main>
 
-  <div id="summarySection">
-    <h2>סיכום פריטים לחיתוך</h2>
-    <div id="summaryTableWrap"></div>
-    <div class="summary-actions">
-      <button type="button" id="copySummaryBtn">📋 העתק כטקסט</button>
-      <button type="button" id="printSummaryBtn">🖨️ הדפסה</button>
-      <button type="button" id="backToEditBtn" class="secondary">➕ חזרה והוספת פריט</button>
-      <button type="button" id="resetAllBtn" class="secondary">🗑️ התחלה מחדש</button>
-    </div>
-  </div>
-
+  <main class="view" data-view="worker" hidden>
+    <section class="worker-section">
+      <h2 class="worker-section__title">ממתינים לחיתוך <span class="count-pill" id="pendingCount">0</span></h2>
+      <div class="ticket-list" id="pendingList"></div>
+      <p class="empty-state" id="pendingEmpty" hidden>אין פריטים ממתינים כרגע.</p>
+    </section>
+    <section class="worker-section">
+      <h2 class="worker-section__title">בוצעו לאחרונה</h2>
+      <div class="ticket-list ticket-list--done" id="doneList"></div>
+      <p class="empty-state" id="doneEmpty" hidden>עוד לא בוצעו פריטים.</p>
+    </section>
+  </main>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
 <script>
   // ============================================================
-  // OCR: image upload / paste / recognition
+  // db capability
   // ============================================================
-  const imgInput = document.getElementById('imgInput');
-  const imgPreviewWrap = document.getElementById('imgPreviewWrap');
-  const imgPreview = document.getElementById('imgPreview');
-  const removeImgBtn = document.getElementById('removeImgBtn');
-  const runOcrBtn = document.getElementById('runOcrBtn');
-  const ocrStatus = document.getElementById('ocrStatus');
-  const ocrWarning = document.getElementById('ocrWarning');
-  const ocrRawWrap = document.getElementById('ocrRawWrap');
-  const ocrRaw = document.getElementById('ocrRaw');
-  const ocrApplyBtn = document.getElementById('ocrApply');
-  const pasteZone = document.getElementById('pasteZone');
+  let db = null;
+  const dbReady = (async () => {
+    if (typeof window.claude === 'undefined') return null;
+    try { return await window.claude.use('db'); } catch (e) { return null; }
+  })();
+  dbReady.then((resolved) => {
+    db = resolved;
+    if (!db) {
+      officeStatus.textContent = 'שים לב: העמוד נפתח ללא חיבור למסד הנתונים המשותף (למשל כקובץ מקומי). אפשר למלא פריטים, אך לא לשלוח אותם לעובד. פתח את הקישור המפורסם כדי שהשליחה תעבוד.';
+      submitBtn.disabled = true;
+    }
+  });
 
-  // Grows the textarea to fit its full content (up to its max-height, after
-  // which it scrolls) so the recognized text is visible without scrolling.
-  function autoGrowOcrRaw() {
-    ocrRaw.style.height = 'auto';
-    ocrRaw.style.height = ocrRaw.scrollHeight + 'px';
-  }
-  ocrRaw.addEventListener('input', autoGrowOcrRaw);
+  // ============================================================
+  // Tabs
+  // ============================================================
+  const tabs = document.querySelectorAll('.tab');
+  const views = document.querySelectorAll('.view');
+  let workerViewInitialized = false;
 
-  let selectedFile = null;
-  // Kept from the last automatic recognition pass so the manual "apply from
-  // text" button can also re-scan the precise number regions in the image,
-  // instead of only re-parsing the already-recognized (and possibly
-  // digit-mangled) raw text.
-  let lastOcrData = null;
-  let lastOcrCanvas = null;
-
-  function handleImageFile(file) {
-    if (!file) return;
-
-    // Each new pasted/uploaded image starts its own item instead of
-    // replacing the one already loaded for the current item - this lets
-    // the user paste up to MAX_ITEMS screenshots in a row and have each
-    // become its own saved item automatically.
-    if (selectedFile) {
-      if (savedItems.length >= MAX_ITEMS) {
-        alert(`הגעת למספר המרבי של פריטים (${MAX_ITEMS}). ניתן ללחוץ על "סיימתי - הצג סיכום".`);
-        return;
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((t) => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      const target = tab.dataset.tab;
+      views.forEach((v) => { v.hidden = v.dataset.view !== target; });
+      if (target === 'worker' && !workerViewInitialized) {
+        workerViewInitialized = true;
+        initWorkerView();
       }
-      const data = collectCurrentFormData(false);
-      if (data) {
-        savedItems.push(data);
-        resetCurrentForm();
-        updateCounterLabel();
-      }
-      // If the current item isn't complete yet (צורה/חומר/מס' יחידות still
-      // missing - e.g. OCR hasn't run/finished on the previous image), we
-      // just fall through and replace its image below instead of losing
-      // in-progress work.
-    }
-
-    selectedFile = file;
-    const url = URL.createObjectURL(selectedFile);
-    imgPreview.src = url;
-    imgPreviewWrap.style.display = 'block';
-    runOcrBtn.disabled = false;
-    ocrStatus.textContent = 'תמונה נטענה. לוחצים על "זהה טקסט מהתמונה".';
-    ocrWarning.style.display = 'none';
-    ocrRawWrap.style.display = 'none';
-  }
-
-  function clearSelectedImage() {
-    selectedFile = null;
-    lastOcrData = null;
-    lastOcrCanvas = null;
-    imgPreviewWrap.style.display = 'none';
-    imgPreview.src = '';
-    runOcrBtn.disabled = true;
-    ocrStatus.textContent = '';
-    ocrWarning.style.display = 'none';
-    ocrRawWrap.style.display = 'none';
-    ocrRaw.value = '';
-    ocrRaw.style.height = '';
-    imgInput.value = '';
-  }
-
-  removeImgBtn.addEventListener('click', clearSelectedImage);
-
-  imgInput.addEventListener('change', function() {
-    const file = this.files && this.files[0] ? this.files[0] : null;
-    if (file) handleImageFile(file);
-    else runOcrBtn.disabled = true;
+    });
   });
 
-  function extractImageFromClipboard(clipboardData) {
-    if (!clipboardData || !clipboardData.items) return null;
-    for (const item of clipboardData.items) {
-      if (item.type && item.type.indexOf('image') !== -1) return item.getAsFile();
-    }
-    return null;
-  }
-
-  document.addEventListener('paste', function(e) {
-    const file = extractImageFromClipboard(e.clipboardData || window.clipboardData);
-    if (file) {
-      e.preventDefault();
-      handleImageFile(file);
-      pasteZone.textContent = 'התמונה הודבקה בהצלחה ✓';
-      setTimeout(() => { pasteZone.textContent = 'לחץ כאן ואז הדבק תמונה (Ctrl+V)'; }, 2000);
-    }
-  });
-
-  pasteZone.addEventListener('focus', () => pasteZone.classList.add('dragover'));
-  pasteZone.addEventListener('blur', () => pasteZone.classList.remove('dragover'));
-  pasteZone.addEventListener('dragover', (e) => { e.preventDefault(); pasteZone.classList.add('dragover'); });
-  pasteZone.addEventListener('dragleave', () => pasteZone.classList.remove('dragover'));
-  pasteZone.addEventListener('drop', function(e) {
-    e.preventDefault();
-    pasteZone.classList.remove('dragover');
-    const file = e.dataTransfer.files && e.dataTransfer.files[0];
-    if (file && file.type.indexOf('image') !== -1) handleImageFile(file);
-  });
-
-  // ---------- Image preprocessing (upscale for better OCR accuracy) ----------
+  // ============================================================
+  // OCR: pure helpers (image preprocessing / recognition / parsing)
+  // ============================================================
   function loadImageElement(file) {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -559,7 +476,6 @@
     return canvas;
   }
 
-  // ---------- Focused re-scan of a small region to get a clean number ----------
   // Cropping tightly around a single WORD (not a whole table line/row) matters:
   // a table row's bbox also contains the Hebrew label text, and re-recognizing
   // that whole strip with a digit-only whitelist can make the engine "invent"
@@ -595,62 +511,6 @@
     }
   }
 
-  runOcrBtn.addEventListener('click', async function() {
-    if (!selectedFile) return;
-    runOcrBtn.disabled = true;
-    ocrWarning.style.display = 'none';
-    ocrStatus.textContent = 'מעבד את התמונה...';
-
-    try {
-      const canvas = await buildPreprocessedCanvas(selectedFile, 2.5);
-      ocrStatus.textContent = 'מזהה טקסט מהתמונה...';
-
-      const { data } = await Tesseract.recognize(canvas, 'heb+eng', {
-        logger: (m) => {
-          if (m.status && typeof m.progress === 'number') {
-            ocrStatus.textContent = `${translateStatus(m.status)} ${(m.progress * 100).toFixed(0)}%`;
-          }
-        }
-      });
-
-      ocrRaw.value = data.text.trim();
-      ocrRawWrap.style.display = 'block';
-      autoGrowOcrRaw();
-      lastOcrData = data;
-      lastOcrCanvas = canvas;
-
-      ocrStatus.textContent = 'מדייק ערכים מספריים...';
-      await applyOcrToForm(data.text, data, canvas);
-
-      ocrStatus.textContent = 'זיהוי הושלם. בדוק את השדות ותקן במידת הצורך.';
-      ocrWarning.style.display = 'block';
-    } catch (err) {
-      console.error(err);
-      ocrStatus.textContent = 'אירעה שגיאה בזיהוי הטקסט. נסה תמונה ברורה יותר.';
-    } finally {
-      runOcrBtn.disabled = false;
-    }
-  });
-
-  function translateStatus(status) {
-    const map = {
-      'loading tesseract core': 'טוען מנוע זיהוי',
-      'initializing tesseract': 'מאתחל',
-      'loading language traineddata': 'טוען שפה',
-      'initializing api': 'מאתחל ממשק',
-      'recognizing text': 'מזהה טקסט'
-    };
-    return map[status] || status;
-  }
-
-  ocrApplyBtn.addEventListener('click', function() {
-    applyOcrToForm(ocrRaw.value, lastOcrData, lastOcrCanvas);
-  });
-
-  // ============================================================
-  // Parsing logic
-  // ============================================================
-
   // Tesseract.js (v5) returns a nested tree - data.blocks[].paragraphs[].lines[].words[] -
   // there is no flat data.lines/data.words array. Walk it down to a flat line list.
   function flattenOcrLines(ocrData) {
@@ -669,12 +529,12 @@
   // Finds the Hebrew label's own text line, then returns the bbox of the
   // numeric word on that same line (never the whole line/row bbox) so the
   // focused re-scan above only ever sees the digits themselves.
-  function findRowNumberBbox(ocrData, labelRegex) {
+  function findLabelNumberBbox(ocrData, labelRegex) {
     if (!ocrData) return null;
     const lines = flattenOcrLines(ocrData);
     for (const line of lines) {
       if (!labelRegex.test(line.text)) continue;
-      const words = (line.words || []).filter(w => /\d/.test(w.text));
+      const words = (line.words || []).filter((w) => /\d/.test(w.text));
       let best = null;
       for (const w of words) {
         const cleaned = w.text.replace(/[^\d.,]/g, '');
@@ -687,51 +547,300 @@
     return null;
   }
 
+  function findNumberNear(text, label) {
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes(label)) {
+        const candidates = [lines[i], lines[i + 1] || ''];
+        for (const line of candidates) {
+          const m = line.match(/(\d+(?:[.,]\d+)?)/);
+          if (m) return m[1].replace(',', '.');
+        }
+      }
+    }
+    return null;
+  }
+
   // Raw-material systems typically state the shape as a code in an
   // "אפיון" / "מפרט טכני" field (e.g. "BAR-RND\מוט עגול" for round bar).
   // Prefer reading that field when present; otherwise fall back to
   // scanning the whole recognized text for the same keywords/codes.
   function detectShapeFromText(text) {
     const lines = text.split('\n');
-    const labeledLines = lines.filter(l => /אפיון|מפרט\s*טכני/.test(l));
+    const labeledLines = lines.filter((l) => /אפיון|מפרט\s*טכני/.test(l));
     const searchIn = labeledLines.length ? labeledLines.join('\n') : text;
 
-    // Round/bar stock - checked first since it's the more specific code
     if (/BAR[-\s]?RND|BAR[-\s]?ROUND|עגול|מוט/.test(searchIn)) return 'מוט';
-    // Flat/plate stock
     if (/\bPLATE\b|\bSHEET\b|BAR[-\s]?SQ|פלטה|לוח|ריבוע|מלבן/.test(searchIn)) return 'פלטה';
-
     return null;
   }
 
-  async function applyOcrToForm(rawText, ocrData, canvas) {
-    const text = rawText.replace(/\r/g, '');
+  function translateStatus(status) {
+    const map = {
+      'loading tesseract core': 'טוען מנוע זיהוי',
+      'initializing tesseract': 'מאתחל',
+      'loading language traineddata': 'טוען שפה',
+      'initializing api': 'מאתחל ממשק',
+      'recognizing text': 'מזהה טקסט'
+    };
+    return map[status] || status;
+  }
 
-    // Shape detection
-    const detectedShape = detectShapeFromText(text);
-    if (detectedShape) {
-      shapeSelect.value = detectedShape;
-      shapeSelect.dispatchEvent(new Event('change'));
-    }
+  function autoGrowTextarea(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
 
-    // Material detection (AISI codes etc.)
-    const materialMatch = text.match(/AISI\s*[- ]?\s*\d+/i);
-    if (materialMatch) {
-      document.getElementById('material').value = materialMatch[0].toUpperCase().replace(/\s+/g, ' ');
-    }
+  // ============================================================
+  // Item rows (office view)
+  // ============================================================
+  const MAX_ROWS = 10;
+  let rowSeq = 0;
+  const rows = [];
+  const itemsList = document.getElementById('itemsList');
+  const addRowBtn = document.getElementById('addRowBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const officeStatus = document.getElementById('officeStatus');
 
-    function findNumberNear(label) {
-      const lines = text.split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(label)) {
-          const candidates = [lines[i], lines[i + 1] || ''];
-          for (const line of candidates) {
-            const m = line.match(/(\d+(?:[.,]\d+)?)/);
-            if (m) return m[1].replace(',', '.');
+  function rowTemplate() {
+    return `
+      <div class="item-card">
+        <div class="item-card__head">
+          <span class="item-card__num" data-role="num">פריט</span>
+          <button type="button" class="icon-btn danger" data-action="remove" title="הסר פריט" aria-label="הסר פריט">✕</button>
+        </div>
+
+        <div class="field-grid">
+          <label class="field"><span>צורה</span>
+            <select data-field="shape">
+              <option value="">בחר צורה</option>
+              <option value="מוט">מוט</option>
+              <option value="פלטה">פלטה</option>
+            </select>
+          </label>
+          <label class="field"><span>חומר</span>
+            <input type="text" data-field="material" placeholder="לדוגמה: AISI 303">
+          </label>
+          <label class="field"><span>מס' יחידות</span>
+            <input type="number" min="1" data-field="units">
+          </label>
+        </div>
+
+        <div class="dims-group" data-dims="פלטה" hidden>
+          <div class="dims-row">
+            <label class="field"><span>H (גובה)</span><input type="number" step="any" data-field="h"></label>
+            <label class="field"><span>W (רוחב)</span><input type="number" step="any" data-field="w"></label>
+            <label class="field"><span>L (אורך)</span><input type="number" step="any" data-field="l_plate"></label>
+          </div>
+        </div>
+        <div class="dims-group" data-dims="מוט" hidden>
+          <div class="dims-row">
+            <label class="field"><span>קוטר</span><input type="number" step="any" data-field="d"></label>
+            <label class="field"><span>L (אורך)</span><input type="number" step="any" data-field="l_rod"></label>
+          </div>
+        </div>
+
+        <div class="ocr-toggle-row">
+          <button type="button" class="btn btn--small" data-action="toggle-ocr">📷 זיהוי מתמונה (OCR)</button>
+          <span class="ocr-badge" data-role="badge" hidden>תמונה מצורפת</span>
+        </div>
+
+        <div class="ocr-panel" data-role="panel" hidden>
+          <div class="ocr-panel__controls">
+            <input type="file" accept="image/*" class="file-input" data-role="fileInput">
+            <button type="button" class="btn btn--small btn--steel" data-action="runOcr" disabled>🔍 זהה טקסט מהתמונה</button>
+          </div>
+          <div class="paste-zone" data-role="pasteZone" tabindex="0">אפשר גם להדביק תמונה כאן (Ctrl+V)</div>
+          <div class="img-preview-wrap" data-role="imgPreviewWrap" hidden>
+            <img data-role="imgPreview" alt="תצוגה מקדימה">
+            <button type="button" class="remove-img-btn" data-action="removeImg" aria-label="הסר תמונה">✕</button>
+          </div>
+          <div class="ocr-status" data-role="status"></div>
+          <div class="ocr-warning" data-role="warning" hidden>⚠️ יש לבדוק את השדות המספריים (קוטר / אורך) - זיהוי אוטומטי אינו מובטח ב-100%.</div>
+          <div class="ocr-raw-wrap" data-role="rawWrap" hidden>
+            <label>טקסט שזוהה (ניתן לתקן ידנית לפני מילוי):</label>
+            <textarea data-role="raw"></textarea>
+            <button type="button" class="btn btn--small btn--success" data-action="applyOcr">✅ מלא את הפריט לפי הטקסט</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function addRow() {
+    if (rows.length >= MAX_ROWS) return null;
+    rowSeq += 1;
+    const wrap = document.createElement('div');
+    wrap.innerHTML = rowTemplate().trim();
+    const el = wrap.firstElementChild;
+    itemsList.appendChild(el);
+
+    const row = {
+      el,
+      fields: {
+        shape: el.querySelector('[data-field="shape"]'),
+        material: el.querySelector('[data-field="material"]'),
+        units: el.querySelector('[data-field="units"]'),
+        h: el.querySelector('[data-field="h"]'),
+        w: el.querySelector('[data-field="w"]'),
+        l_plate: el.querySelector('[data-field="l_plate"]'),
+        d: el.querySelector('[data-field="d"]'),
+        l_rod: el.querySelector('[data-field="l_rod"]')
+      },
+      dimsPlate: el.querySelector('[data-dims="פלטה"]'),
+      dimsRod: el.querySelector('[data-dims="מוט"]'),
+      numEl: el.querySelector('[data-role="num"]'),
+      ocr: {
+        file: null,
+        lastData: null,
+        lastCanvas: null,
+        panel: el.querySelector('[data-role="panel"]'),
+        badge: el.querySelector('[data-role="badge"]'),
+        fileInput: el.querySelector('[data-role="fileInput"]'),
+        runBtn: el.querySelector('[data-action="runOcr"]'),
+        pasteZone: el.querySelector('[data-role="pasteZone"]'),
+        imgPreviewWrap: el.querySelector('[data-role="imgPreviewWrap"]'),
+        imgPreview: el.querySelector('[data-role="imgPreview"]'),
+        status: el.querySelector('[data-role="status"]'),
+        warning: el.querySelector('[data-role="warning"]'),
+        rawWrap: el.querySelector('[data-role="rawWrap"]'),
+        raw: el.querySelector('[data-role="raw"]')
+      }
+    };
+    rows.push(row);
+
+    row.fields.shape.addEventListener('change', () => {
+      const v = row.fields.shape.value;
+      row.dimsPlate.hidden = v !== 'פלטה';
+      row.dimsRod.hidden = v !== 'מוט';
+    });
+
+    el.querySelector('[data-action="remove"]').addEventListener('click', () => removeRow(row));
+    el.querySelector('[data-action="toggle-ocr"]').addEventListener('click', () => {
+      row.ocr.panel.hidden = !row.ocr.panel.hidden;
+    });
+    el.querySelector('[data-action="removeImg"]').addEventListener('click', () => clearRowImage(row));
+    el.querySelector('[data-action="runOcr"]').addEventListener('click', () => runOcrForRow(row));
+    el.querySelector('[data-action="applyOcr"]').addEventListener('click', () => {
+      applyOcrToRow(row, row.ocr.raw.value, row.ocr.lastData, row.ocr.lastCanvas);
+    });
+    row.ocr.raw.addEventListener('input', () => autoGrowTextarea(row.ocr.raw));
+    row.ocr.fileInput.addEventListener('change', function () {
+      const file = this.files && this.files[0] ? this.files[0] : null;
+      if (file) loadImageIntoRow(row, file);
+    });
+    row.ocr.pasteZone.addEventListener('focus', () => row.ocr.pasteZone.classList.add('dragover'));
+    row.ocr.pasteZone.addEventListener('blur', () => row.ocr.pasteZone.classList.remove('dragover'));
+    row.ocr.pasteZone.addEventListener('dragover', (e) => { e.preventDefault(); row.ocr.pasteZone.classList.add('dragover'); });
+    row.ocr.pasteZone.addEventListener('dragleave', () => row.ocr.pasteZone.classList.remove('dragover'));
+    row.ocr.pasteZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      row.ocr.pasteZone.classList.remove('dragover');
+      const file = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file && file.type.indexOf('image') !== -1) loadImageIntoRow(row, file);
+    });
+
+    renumberRows();
+    addRowBtn.disabled = rows.length >= MAX_ROWS;
+    return row;
+  }
+
+  function removeRow(row) {
+    row.el.remove();
+    const idx = rows.indexOf(row);
+    if (idx !== -1) rows.splice(idx, 1);
+    if (rows.length === 0) addRow();
+    renumberRows();
+    addRowBtn.disabled = rows.length >= MAX_ROWS;
+  }
+
+  function renumberRows() {
+    rows.forEach((r, i) => { r.numEl.textContent = `פריט ${i + 1}`; });
+  }
+
+  function resetAllRows() {
+    itemsList.innerHTML = '';
+    rows.length = 0;
+    addRow();
+  }
+
+  function loadImageIntoRow(row, file) {
+    row.ocr.file = file;
+    row.ocr.imgPreview.src = URL.createObjectURL(file);
+    row.ocr.imgPreviewWrap.hidden = false;
+    row.ocr.runBtn.disabled = false;
+    row.ocr.status.textContent = 'תמונה נטענה. לוחצים על "זהה טקסט מהתמונה".';
+    row.ocr.warning.hidden = true;
+    row.ocr.rawWrap.hidden = true;
+    row.ocr.badge.hidden = false;
+    row.ocr.panel.hidden = false;
+  }
+
+  function clearRowImage(row) {
+    row.ocr.file = null;
+    row.ocr.lastData = null;
+    row.ocr.lastCanvas = null;
+    row.ocr.imgPreviewWrap.hidden = true;
+    row.ocr.imgPreview.src = '';
+    row.ocr.runBtn.disabled = true;
+    row.ocr.status.textContent = '';
+    row.ocr.warning.hidden = true;
+    row.ocr.rawWrap.hidden = true;
+    row.ocr.raw.value = '';
+    row.ocr.raw.style.height = '';
+    row.ocr.fileInput.value = '';
+    row.ocr.badge.hidden = true;
+  }
+
+  async function runOcrForRow(row) {
+    if (!row.ocr.file) return;
+    row.ocr.runBtn.disabled = true;
+    row.ocr.warning.hidden = true;
+    row.ocr.status.textContent = 'מעבד את התמונה...';
+
+    try {
+      const canvas = await buildPreprocessedCanvas(row.ocr.file, 2.5);
+      row.ocr.status.textContent = 'מזהה טקסט מהתמונה...';
+
+      const { data } = await Tesseract.recognize(canvas, 'heb+eng', {
+        logger: (m) => {
+          if (m.status && typeof m.progress === 'number') {
+            row.ocr.status.textContent = `${translateStatus(m.status)} ${(m.progress * 100).toFixed(0)}%`;
           }
         }
-      }
-      return null;
+      });
+
+      row.ocr.raw.value = data.text.trim();
+      row.ocr.rawWrap.hidden = false;
+      autoGrowTextarea(row.ocr.raw);
+      row.ocr.lastData = data;
+      row.ocr.lastCanvas = canvas;
+
+      row.ocr.status.textContent = 'מדייק ערכים מספריים...';
+      await applyOcrToRow(row, data.text, data, canvas);
+
+      row.ocr.status.textContent = 'זיהוי הושלם. בדוק את השדות ותקן במידת הצורך.';
+      row.ocr.warning.hidden = false;
+    } catch (err) {
+      console.error(err);
+      row.ocr.status.textContent = 'אירעה שגיאה בזיהוי הטקסט. נסה תמונה ברורה יותר.';
+    } finally {
+      row.ocr.runBtn.disabled = false;
+    }
+  }
+
+  async function applyOcrToRow(row, rawText, ocrData, canvas) {
+    const text = rawText.replace(/\r/g, '');
+
+    const detectedShape = detectShapeFromText(text);
+    if (detectedShape) {
+      row.fields.shape.value = detectedShape;
+      row.fields.shape.dispatchEvent(new Event('change'));
+    }
+
+    const materialMatch = text.match(/AISI\s*[- ]?\s*\d+/i);
+    if (materialMatch) {
+      row.fields.material.value = materialMatch[0].toUpperCase().replace(/\s+/g, ' ');
     }
 
     let outerDiameter = null;
@@ -739,237 +848,247 @@
     let hVal = null;
     let wVal = null;
 
-    // Precise refinement using per-word bounding boxes: re-scan just the
-    // numeric word next to each Hebrew label at high resolution. This avoids
-    // issues like "12.7" being misread as "127" or "250.0" losing its
-    // decimal point, which happened when the whole table row (label + value
-    // + unit) was re-scanned together as one blob.
     if (ocrData && canvas) {
-      const outerBbox = findRowNumberBbox(ocrData, /קוטר\s*חיצוני/);
-      const innerBbox = findRowNumberBbox(ocrData, /קוטר\s*פנימי/);
-      const lengthBbox = findRowNumberBbox(ocrData, /אורך|ארוך/);
-      const hBbox = findRowNumberBbox(ocrData, /גובה/);
-      const wBbox = findRowNumberBbox(ocrData, /רוחב/);
+      const outerBbox = findLabelNumberBbox(ocrData, /קוטר\s*חיצוני/);
+      const innerBbox = findLabelNumberBbox(ocrData, /קוטר\s*פנימי/);
+      const lengthBbox = findLabelNumberBbox(ocrData, /אורך|ארוך/);
+      const hBbox = findLabelNumberBbox(ocrData, /גובה/);
+      const wBbox = findLabelNumberBbox(ocrData, /רוחב/);
 
       if (outerBbox) outerDiameter = await recognizeNumberInRegion(canvas, outerBbox);
       if (lengthBbox) length = await recognizeNumberInRegion(canvas, lengthBbox);
       if (hBbox) hVal = await recognizeNumberInRegion(canvas, hBbox);
       if (wBbox) wVal = await recognizeNumberInRegion(canvas, wBbox);
 
-      // If there is only a generic "קוטר" row (no פנימי/חיצוני split), and we
-      // still don't have an outer diameter, fall back to it - but never to
-      // the inner-diameter row.
       if (!outerDiameter && !innerBbox) {
-        const genericBbox = findRowNumberBbox(ocrData, /קוטר/);
+        const genericBbox = findLabelNumberBbox(ocrData, /קוטר/);
         if (genericBbox) outerDiameter = await recognizeNumberInRegion(canvas, genericBbox);
       }
     }
 
-    // Fallback to plain text search if bbox refinement did not produce values
-    if (!outerDiameter) outerDiameter = findNumberNear('קוטר חיצוני') || findNumberNear('קוטר');
-    if (!length) length = findNumberNear('אורך') || findNumberNear('ארוך');
-    if (!hVal) hVal = findNumberNear(' H ') || findNumberNear('גובה');
-    if (!wVal) wVal = findNumberNear(' W ') || findNumberNear('רוחב');
+    if (!outerDiameter) outerDiameter = findNumberNear(text, 'קוטר חיצוני') || findNumberNear(text, 'קוטר');
+    if (!length) length = findNumberNear(text, 'אורך') || findNumberNear(text, 'ארוך');
+    if (!hVal) hVal = findNumberNear(text, ' H ') || findNumberNear(text, 'גובה');
+    if (!wVal) wVal = findNumberNear(text, ' W ') || findNumberNear(text, 'רוחב');
 
-    if (outerDiameter) document.getElementById('diameter_rod').value = outerDiameter;
+    if (outerDiameter) row.fields.d.value = outerDiameter;
     if (length) {
-      document.getElementById('l_rod').value = length;
-      document.getElementById('l_plate').value = length;
+      row.fields.l_rod.value = length;
+      row.fields.l_plate.value = length;
     }
-    if (hVal) document.getElementById('h_plate').value = hVal;
-    if (wVal) document.getElementById('w_plate').value = wVal;
+    if (hVal) row.fields.h.value = hVal;
+    if (wVal) row.fields.w.value = wVal;
 
-    // Units / quantity
     const unitsMatch = text.match(/(?:מס['׳]?\s*יחיד|כמות)[^\d]{0,10}(\d+)/);
-    if (unitsMatch) {
-      document.getElementById('units').value = unitsMatch[1];
-    }
+    if (unitsMatch) row.fields.units.value = unitsMatch[1];
   }
 
   // ============================================================
-  // Form shape toggle
+  // Global paste - routes each pasted/uploaded image to the next row
+  // that doesn't have one yet, auto-adding a fresh row if all existing
+  // ones already have an image (up to MAX_ROWS), then runs OCR on it.
   // ============================================================
-  const shapeSelect = document.getElementById('shape');
-  const dimsPlate = document.getElementById('dimsPlate');
-  const dimsRod = document.getElementById('dimsRod');
+  function routeIncomingImage(file) {
+    let target = rows.find((r) => !r.ocr.file);
+    if (!target) {
+      if (rows.length >= MAX_ROWS) {
+        alert(`הגעת למספר המרבי של פריטים (${MAX_ROWS}).`);
+        return;
+      }
+      target = addRow();
+    }
+    loadImageIntoRow(target, file);
+    target.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    runOcrForRow(target);
+  }
 
-  shapeSelect.addEventListener('change', function() {
-    dimsPlate.classList.remove('active');
-    dimsRod.classList.remove('active');
-    if (this.value === 'פלטה') dimsPlate.classList.add('active');
-    else if (this.value === 'מוט') dimsRod.classList.add('active');
+  function extractImageFromClipboard(clipboardData) {
+    if (!clipboardData || !clipboardData.items) return null;
+    for (const item of clipboardData.items) {
+      if (item.type && item.type.indexOf('image') !== -1) return item.getAsFile();
+    }
+    return null;
+  }
+
+  document.addEventListener('paste', function (e) {
+    const officeView = document.querySelector('[data-view="office"]');
+    if (officeView.hidden) return;
+    const file = extractImageFromClipboard(e.clipboardData || window.clipboardData);
+    if (!file) return;
+    e.preventDefault();
+
+    const active = document.activeElement;
+    const rowForActiveZone = rows.find((r) => r.ocr.pasteZone === active);
+    if (rowForActiveZone) {
+      loadImageIntoRow(rowForActiveZone, file);
+      runOcrForRow(rowForActiveZone);
+    } else {
+      routeIncomingImage(file);
+    }
   });
 
+  const globalPaste = document.getElementById('globalPaste');
+  globalPaste.addEventListener('dragover', (e) => { e.preventDefault(); globalPaste.classList.add('dragover'); });
+  globalPaste.addEventListener('dragleave', () => globalPaste.classList.remove('dragover'));
+  globalPaste.addEventListener('drop', (e) => {
+    e.preventDefault();
+    globalPaste.classList.remove('dragover');
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file && file.type.indexOf('image') !== -1) routeIncomingImage(file);
+  });
+
+  addRowBtn.addEventListener('click', () => addRow());
+
   // ============================================================
-  // Multi-item workflow
+  // Submit to the shared cutting-items store
   // ============================================================
-  const MAX_ITEMS = 10;
-  let savedItems = [];
-
-  const itemCounterLabel = document.getElementById('itemCounterLabel');
-  const addAnotherBtn = document.getElementById('addAnotherBtn');
-  const finishBtn = document.getElementById('finishBtn');
-  const currentFormWrapper = document.getElementById('currentFormWrapper');
-  const summarySection = document.getElementById('summarySection');
-  const summaryTableWrap = document.getElementById('summaryTableWrap');
-
-  function updateCounterLabel() {
-    const next = Math.min(savedItems.length + 1, MAX_ITEMS);
-    itemCounterLabel.textContent = `פריט מספר ${next} מתוך עד ${MAX_ITEMS}${savedItems.length > 0 ? ' | פריטים שנשמרו: ' + savedItems.length : ''}`;
-    addAnotherBtn.disabled = savedItems.length >= MAX_ITEMS;
-  }
-
-  function isCurrentFormEmpty() {
-    const shape = document.getElementById('shape').value;
-    const material = document.getElementById('material').value.trim();
-    const units = document.getElementById('units').value;
-    return !shape && !material && !units;
-  }
-
-  function collectCurrentFormData(showAlerts) {
-    const shape = document.getElementById('shape').value;
-    const material = document.getElementById('material').value.trim();
-    const units = document.getElementById('units').value;
-
-    if (!shape || !material || !units) {
-      if (showAlerts) alert('נא למלא לפחות: צורה, חומר ומס\' יחידות לפני שמירת הפריט.');
-      return null;
-    }
+  function collectRowData(row) {
+    const shape = row.fields.shape.value;
+    const material = row.fields.material.value.trim();
+    const units = row.fields.units.value;
+    if (!shape || !material || !units) return null;
 
     let dims = {};
     let dimsText = '';
     if (shape === 'פלטה') {
-      const h = document.getElementById('h_plate').value;
-      const w = document.getElementById('w_plate').value;
-      const l = document.getElementById('l_plate').value;
+      const h = row.fields.h.value;
+      const w = row.fields.w.value;
+      const l = row.fields.l_plate.value;
       dims = { h, w, l };
       dimsText = `H: ${h || '-'} | W: ${w || '-'} | L: ${l || '-'} מ"מ`;
     } else if (shape === 'מוט') {
-      const d = document.getElementById('diameter_rod').value;
-      const l = document.getElementById('l_rod').value;
+      const d = row.fields.d.value;
+      const l = row.fields.l_rod.value;
       dims = { d, l };
       dimsText = `קוטר: ${d || '-'} | אורך: ${l || '-'} מ"מ`;
     }
-
-    return { shape, material, units, dims, dimsText };
+    return { shape, material, units: Number(units), dims, dimsText };
   }
 
-  function resetCurrentForm() {
-    document.getElementById('materialForm').reset();
-    dimsPlate.classList.remove('active');
-    dimsRod.classList.remove('active');
-
-    clearSelectedImage();
-  }
-
-  addAnotherBtn.addEventListener('click', function() {
-    if (savedItems.length >= MAX_ITEMS) {
-      alert(`הגעת למספר המרבי של פריטים (${MAX_ITEMS}). ניתן ללחוץ על "סיימתי - הצג סיכום".`);
+  submitBtn.addEventListener('click', async () => {
+    await dbReady;
+    if (!db) {
+      officeStatus.textContent = 'אין חיבור למסד נתונים משותף - פתח את הקישור המפורסם של העמוד (לא קובץ מקומי) כדי לשלוח פריטים.';
       return;
     }
-    const data = collectCurrentFormData(true);
-    if (!data) return;
-    savedItems.push(data);
-    resetCurrentForm();
-    updateCounterLabel();
+
+    const collected = rows.map(collectRowData).filter(Boolean);
+    if (collected.length === 0) {
+      alert('לא הוזן אף פריט תקין (חובה למלא לפחות צורה, חומר ומס\' יחידות).');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    officeStatus.textContent = 'שולח...';
+    try {
+      const col = db.collection('cutting/items');
+      for (const item of collected) {
+        await col.add({
+          ...item,
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+          doneAt: null
+        });
+      }
+      officeStatus.textContent = `נשלחו ${collected.length} פריטים לעובד החיתוך.`;
+      resetAllRows();
+    } catch (e) {
+      officeStatus.textContent = 'שגיאה בשליחה: ' + (e && e.message ? e.message : String(e));
+    } finally {
+      submitBtn.disabled = false;
+    }
   });
 
-  finishBtn.addEventListener('click', function() {
-    if (!isCurrentFormEmpty()) {
-      const data = collectCurrentFormData(true);
-      if (!data) return; // form partially filled and invalid - block until fixed or cleared
-      savedItems.push(data);
-      resetCurrentForm();
-    }
+  // ============================================================
+  // Worker view
+  // ============================================================
+  const pendingList = document.getElementById('pendingList');
+  const pendingEmpty = document.getElementById('pendingEmpty');
+  const pendingCount = document.getElementById('pendingCount');
+  const doneList = document.getElementById('doneList');
+  const doneEmpty = document.getElementById('doneEmpty');
 
-    if (savedItems.length === 0) {
-      alert('לא נשמר עדיין אף פריט. נא למלא לפחות פריט אחד.');
-      return;
-    }
-
-    renderSummary();
-    currentFormWrapper.style.display = 'none';
-    summarySection.style.display = 'block';
-  });
-
-  function renderSummary() {
-    if (savedItems.length === 0) {
-      summaryTableWrap.innerHTML = '<div class="empty-state">לא נשמרו פריטים.</div>';
-      return;
-    }
-
-    let html = '<table class="summary-table"><thead><tr>' +
-      '<th>#</th><th>צורה</th><th>חומר</th><th>מידות</th><th>מס\' יחידות</th>' +
-      '</tr></thead><tbody>';
-
-    savedItems.forEach((item, idx) => {
-      html += `<tr>
-        <td>${idx + 1}</td>
-        <td>${escapeHtml(item.shape)}</td>
-        <td>${escapeHtml(item.material)}</td>
-        <td>${escapeHtml(item.dimsText)}</td>
-        <td>${escapeHtml(item.units)}</td>
-      </tr>`;
+  function renderTickets(container, emptyEl, docs, isDone) {
+    container.innerHTML = '';
+    emptyEl.hidden = docs.length !== 0;
+    docs.forEach((doc) => {
+      const item = doc.data();
+      if (!item) return;
+      const ticket = document.createElement('div');
+      ticket.className = 'ticket' + (isDone ? ' ticket--done' : '');
+      ticket.innerHTML = `
+        <div class="ticket__body">
+          <div class="ticket__title">${escapeHtml(item.shape)} · ${escapeHtml(item.material)}</div>
+          <div class="ticket__dims mono">${escapeHtml(item.dimsText)}</div>
+          <div class="ticket__meta">מס' יחידות: ${escapeHtml(item.units)}</div>
+        </div>
+      `;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      if (isDone) {
+        btn.className = 'btn btn--small';
+        btn.textContent = '↩ החזר לממתין';
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          try {
+            await db.collection('cutting/items').doc(doc.id).update({ status: 'pending', doneAt: null });
+          } catch (e) {
+            alert('שגיאה בעדכון: ' + (e && e.message ? e.message : String(e)));
+            btn.disabled = false;
+          }
+        });
+      } else {
+        btn.className = 'btn btn--success';
+        btn.textContent = '✔ סימון כבוצע';
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          try {
+            await db.collection('cutting/items').doc(doc.id).update({ status: 'done', doneAt: new Date().toISOString() });
+          } catch (e) {
+            alert('שגיאה בעדכון: ' + (e && e.message ? e.message : String(e)));
+            btn.disabled = false;
+          }
+        });
+      }
+      ticket.appendChild(btn);
+      container.appendChild(ticket);
     });
-
-    html += '</tbody></table>';
-    html += `<p class="hint">סה"כ פריטים: ${savedItems.length}</p>`;
-    summaryTableWrap.innerHTML = html;
   }
 
   function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, (c) => ({
+    return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[c]));
   }
 
-  function buildSummaryText() {
-    let lines = ['סיכום פריטים לחיתוך', ''];
-    savedItems.forEach((item, idx) => {
-      lines.push(`פריט ${idx + 1}:`);
-      lines.push(`  צורה: ${item.shape}`);
-      lines.push(`  חומר: ${item.material}`);
-      lines.push(`  מידות: ${item.dimsText}`);
-      lines.push(`  מס' יחידות: ${item.units}`);
-      lines.push('');
-    });
-    lines.push(`סה"כ פריטים: ${savedItems.length}`);
-    return lines.join('\n');
+  async function initWorkerView() {
+    const resolved = await dbReady;
+    if (!resolved) {
+      pendingEmpty.hidden = false;
+      pendingEmpty.textContent = 'אין חיבור למסד הנתונים המשותף בעמוד הזה. פתח את הקישור המפורסם כדי לראות את הפריטים שנשלחו.';
+      doneEmpty.hidden = false;
+      doneEmpty.textContent = 'אין חיבור למסד הנתונים המשותף.';
+      return;
+    }
+
+    db.collection('cutting/items').where('status', '==', 'pending').orderBy('createdAt', 'asc').limit(200)
+      .onSnapshot((snap) => {
+        pendingCount.textContent = String(snap.size);
+        renderTickets(pendingList, pendingEmpty, snap.docs, false);
+      }, (err) => {
+        pendingEmpty.hidden = false;
+        pendingEmpty.textContent = 'שגיאה בטעינת פריטים: ' + err.message;
+      });
+
+    db.collection('cutting/items').where('status', '==', 'done').orderBy('doneAt', 'desc').limit(30)
+      .onSnapshot((snap) => {
+        renderTickets(doneList, doneEmpty, snap.docs, true);
+      }, (err) => {
+        doneEmpty.hidden = false;
+        doneEmpty.textContent = 'שגיאה בטעינת פריטים: ' + err.message;
+      });
   }
 
-  document.getElementById('copySummaryBtn').addEventListener('click', async function() {
-    const text = buildSummaryText();
-    try {
-      await navigator.clipboard.writeText(text);
-      this.textContent = '✅ הועתק!';
-      setTimeout(() => { this.textContent = '📋 העתק כטקסט'; }, 1800);
-    } catch (e) {
-      alert('לא ניתן להעתיק אוטומטית. יש להעתיק ידנית:\n\n' + text);
-    }
-  });
-
-  document.getElementById('printSummaryBtn').addEventListener('click', function() {
-    window.print();
-  });
-
-  document.getElementById('backToEditBtn').addEventListener('click', function() {
-    summarySection.style.display = 'none';
-    currentFormWrapper.style.display = 'block';
-    updateCounterLabel();
-  });
-
-  document.getElementById('resetAllBtn').addEventListener('click', function() {
-    if (!confirm('לאפס את כל הפריטים שנשמרו ולהתחיל מחדש?')) return;
-    savedItems = [];
-    resetCurrentForm();
-    updateCounterLabel();
-    summarySection.style.display = 'none';
-    currentFormWrapper.style.display = 'block';
-  });
-
   // init
-  updateCounterLabel();
+  addRow();
 </script>
-
-</body>
-</html>
