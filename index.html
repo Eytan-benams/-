@@ -629,12 +629,28 @@
   // Parsing logic
   // ============================================================
 
+  // Tesseract.js (v5) returns a nested tree - data.blocks[].paragraphs[].lines[].words[] -
+  // there is no flat data.lines/data.words array. Walk it down to a flat line list.
+  function flattenOcrLines(ocrData) {
+    if (Array.isArray(ocrData.lines)) return ocrData.lines;
+    const lines = [];
+    for (const block of ocrData.blocks || []) {
+      for (const para of block.paragraphs || []) {
+        for (const line of para.lines || []) {
+          lines.push(line);
+        }
+      }
+    }
+    return lines;
+  }
+
   // Finds the Hebrew label's own text line, then returns the bbox of the
   // numeric word on that same line (never the whole line/row bbox) so the
   // focused re-scan above only ever sees the digits themselves.
   function findRowNumberBbox(ocrData, labelRegex) {
-    if (!ocrData || !ocrData.lines) return null;
-    for (const line of ocrData.lines) {
+    if (!ocrData) return null;
+    const lines = flattenOcrLines(ocrData);
+    for (const line of lines) {
       if (!labelRegex.test(line.text)) continue;
       const words = (line.words || []).filter(w => /\d/.test(w.text));
       let best = null;
