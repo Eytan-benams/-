@@ -218,6 +218,7 @@
   #ocrRaw {
     width: 100%;
     min-height: 90px;
+    max-height: 60vh;
     font-size: 13px;
     padding: 8px;
     border-radius: 8px;
@@ -225,6 +226,7 @@
     direction: rtl;
     font-family: monospace;
     resize: vertical;
+    overflow-y: auto;
   }
   #ocrApply {
     margin-top: 10px;
@@ -433,7 +435,21 @@
   const ocrApplyBtn = document.getElementById('ocrApply');
   const pasteZone = document.getElementById('pasteZone');
 
+  // Grows the textarea to fit its full content (up to its max-height, after
+  // which it scrolls) so the recognized text is visible without scrolling.
+  function autoGrowOcrRaw() {
+    ocrRaw.style.height = 'auto';
+    ocrRaw.style.height = ocrRaw.scrollHeight + 'px';
+  }
+  ocrRaw.addEventListener('input', autoGrowOcrRaw);
+
   let selectedFile = null;
+  // Kept from the last automatic recognition pass so the manual "apply from
+  // text" button can also re-scan the precise number regions in the image,
+  // instead of only re-parsing the already-recognized (and possibly
+  // digit-mangled) raw text.
+  let lastOcrData = null;
+  let lastOcrCanvas = null;
 
   function handleImageFile(file) {
     if (!file) return;
@@ -449,6 +465,8 @@
 
   function clearSelectedImage() {
     selectedFile = null;
+    lastOcrData = null;
+    lastOcrCanvas = null;
     imgPreviewWrap.style.display = 'none';
     imgPreview.src = '';
     runOcrBtn.disabled = true;
@@ -456,6 +474,7 @@
     ocrWarning.style.display = 'none';
     ocrRawWrap.style.display = 'none';
     ocrRaw.value = '';
+    ocrRaw.style.height = '';
     imgInput.value = '';
   }
 
@@ -574,6 +593,9 @@
 
       ocrRaw.value = data.text.trim();
       ocrRawWrap.style.display = 'block';
+      autoGrowOcrRaw();
+      lastOcrData = data;
+      lastOcrCanvas = canvas;
 
       ocrStatus.textContent = 'מדייק ערכים מספריים...';
       await applyOcrToForm(data.text, data, canvas);
@@ -600,7 +622,7 @@
   }
 
   ocrApplyBtn.addEventListener('click', function() {
-    applyOcrToForm(ocrRaw.value, null, null);
+    applyOcrToForm(ocrRaw.value, lastOcrData, lastOcrCanvas);
   });
 
   // ============================================================
