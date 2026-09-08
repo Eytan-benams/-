@@ -165,13 +165,40 @@
   .ocr-controls button:hover {
     background-color: #3730a3;
   }
+  #imgPreviewWrap {
+    position: relative;
+    display: none;
+    margin-top: 12px;
+    width: fit-content;
+    max-width: 100%;
+  }
   #imgPreview {
+    display: block;
     max-width: 100%;
     max-height: 220px;
-    margin-top: 12px;
     border-radius: 8px;
     border: 1px solid #c7d2fe;
-    display: none;
+  }
+  #removeImgBtn {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    background: #dc2626;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  #removeImgBtn:hover {
+    background: #b91c1c;
   }
   #ocrStatus {
     font-size: 13px;
@@ -298,7 +325,10 @@
         <button type="button" id="runOcrBtn" disabled>זהה טקסט מהתמונה</button>
       </div>
       <div id="pasteZone" tabindex="0">לחץ כאן ואז הדבק תמונה (Ctrl+V)</div>
-      <img id="imgPreview" alt="תצוגה מקדימה">
+      <div id="imgPreviewWrap">
+        <img id="imgPreview" alt="תצוגה מקדימה">
+        <button type="button" id="removeImgBtn" title="הסר תמונה" aria-label="הסר תמונה">✕</button>
+      </div>
       <div id="ocrStatus"></div>
       <div class="ocr-warning" id="ocrWarning">⚠️ שים לב: יש לבדוק את השדות המספריים (קוטר / אורך) - זיהוי אוטומטי לעולם אינו מובטח ב-100%.</div>
       <div id="ocrRawWrap">
@@ -392,7 +422,9 @@
   // OCR: image upload / paste / recognition
   // ============================================================
   const imgInput = document.getElementById('imgInput');
+  const imgPreviewWrap = document.getElementById('imgPreviewWrap');
   const imgPreview = document.getElementById('imgPreview');
+  const removeImgBtn = document.getElementById('removeImgBtn');
   const runOcrBtn = document.getElementById('runOcrBtn');
   const ocrStatus = document.getElementById('ocrStatus');
   const ocrWarning = document.getElementById('ocrWarning');
@@ -408,12 +440,26 @@
     selectedFile = file;
     const url = URL.createObjectURL(selectedFile);
     imgPreview.src = url;
-    imgPreview.style.display = 'block';
+    imgPreviewWrap.style.display = 'block';
     runOcrBtn.disabled = false;
     ocrStatus.textContent = 'תמונה נטענה. לוחצים על "זהה טקסט מהתמונה".';
     ocrWarning.style.display = 'none';
     ocrRawWrap.style.display = 'none';
   }
+
+  function clearSelectedImage() {
+    selectedFile = null;
+    imgPreviewWrap.style.display = 'none';
+    imgPreview.src = '';
+    runOcrBtn.disabled = true;
+    ocrStatus.textContent = '';
+    ocrWarning.style.display = 'none';
+    ocrRawWrap.style.display = 'none';
+    ocrRaw.value = '';
+    imgInput.value = '';
+  }
+
+  removeImgBtn.addEventListener('click', clearSelectedImage);
 
   imgInput.addEventListener('change', function() {
     const file = this.files && this.files[0] ? this.files[0] : null;
@@ -738,15 +784,7 @@
     dimsPlate.classList.remove('active');
     dimsRod.classList.remove('active');
 
-    selectedFile = null;
-    imgPreview.style.display = 'none';
-    imgPreview.src = '';
-    runOcrBtn.disabled = true;
-    ocrStatus.textContent = '';
-    ocrWarning.style.display = 'none';
-    ocrRawWrap.style.display = 'none';
-    ocrRaw.value = '';
-    imgInput.value = '';
+    clearSelectedImage();
   }
 
   addAnotherBtn.addEventListener('click', function() {
