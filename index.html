@@ -627,15 +627,30 @@
     return null;
   }
 
+  // Raw-material systems typically state the shape as a code in an
+  // "אפיון" / "מפרט טכני" field (e.g. "BAR-RND\מוט עגול" for round bar).
+  // Prefer reading that field when present; otherwise fall back to
+  // scanning the whole recognized text for the same keywords/codes.
+  function detectShapeFromText(text) {
+    const lines = text.split('\n');
+    const labeledLines = lines.filter(l => /אפיון|מפרט\s*טכני/.test(l));
+    const searchIn = labeledLines.length ? labeledLines.join('\n') : text;
+
+    // Round/bar stock - checked first since it's the more specific code
+    if (/BAR[-\s]?RND|BAR[-\s]?ROUND|עגול|מוט/.test(searchIn)) return 'מוט';
+    // Flat/plate stock
+    if (/\bPLATE\b|\bSHEET\b|BAR[-\s]?SQ|פלטה|לוח|ריבוע|מלבן/.test(searchIn)) return 'פלטה';
+
+    return null;
+  }
+
   async function applyOcrToForm(rawText, ocrData, canvas) {
     const text = rawText.replace(/\r/g, '');
 
     // Shape detection
-    if (/מוט/.test(text)) {
-      shapeSelect.value = 'מוט';
-      shapeSelect.dispatchEvent(new Event('change'));
-    } else if (/פלטה/.test(text)) {
-      shapeSelect.value = 'פלטה';
+    const detectedShape = detectShapeFromText(text);
+    if (detectedShape) {
+      shapeSelect.value = detectedShape;
       shapeSelect.dispatchEvent(new Event('change'));
     }
 
