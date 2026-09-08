@@ -453,6 +453,28 @@
 
   function handleImageFile(file) {
     if (!file) return;
+
+    // Each new pasted/uploaded image starts its own item instead of
+    // replacing the one already loaded for the current item - this lets
+    // the user paste up to MAX_ITEMS screenshots in a row and have each
+    // become its own saved item automatically.
+    if (selectedFile) {
+      if (savedItems.length >= MAX_ITEMS) {
+        alert(`הגעת למספר המרבי של פריטים (${MAX_ITEMS}). ניתן ללחוץ על "סיימתי - הצג סיכום".`);
+        return;
+      }
+      const data = collectCurrentFormData(false);
+      if (data) {
+        savedItems.push(data);
+        resetCurrentForm();
+        updateCounterLabel();
+      }
+      // If the current item isn't complete yet (צורה/חומר/מס' יחידות still
+      // missing - e.g. OCR hasn't run/finished on the previous image), we
+      // just fall through and replace its image below instead of losing
+      // in-progress work.
+    }
+
     selectedFile = file;
     const url = URL.createObjectURL(selectedFile);
     imgPreview.src = url;
