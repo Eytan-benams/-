@@ -134,26 +134,27 @@
   .office-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
   .office-status { margin-top: 10px; font-size: 13px; color: #6b7280; min-height: 18px; }
 
-  /* ---------- Print summary ---------- */
-  #printSummary { display: none; }
+  /* ---------- Summary / print ---------- */
+  #summaryView[hidden] { display: none; }
+  #summaryView { background: #fff; border: 1px solid #d9dce1; border-radius: 14px; padding: 24px; margin: 16px 0; }
   .print-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
   .print-table th, .print-table td { border: 1px solid #333; padding: 8px 10px; text-align: right; }
   .print-table th { background: #eee; }
   .print-meta { font-size: 13px; color: #444; margin-bottom: 4px; }
+  .summary-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
 
   @media print {
-    .screen-only { display: none !important; }
-    #printSummary { display: block !important; }
+    .no-print { display: none !important; }
   }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <div class="screen-only">
+  <div id="editView">
     <header class="app-bar">
       <div class="app-bar__title"><span class="app-bar__icon">🔩</span><span>הזמנת חיתוך</span></div>
-      <p class="app-bar__hint">מלא עד 10 פריטים (עם זיהוי אוטומטי מתמונה), ואז הדפס את הרשימה לעובד החיתוך. שום דבר לא נשמר בענן - הכול נשאר במחשב הזה.</p>
+      <p class="app-bar__hint">מלא עד 10 פריטים (עם זיהוי אוטומטי מתמונה), ואז הצג סיכום לפני ההדפסה. שום דבר לא נשמר בענן - הכול נשאר במחשב הזה.</p>
     </header>
 
     <div class="global-paste" id="globalPaste" tabindex="0">
@@ -167,20 +168,24 @@
 
     <div class="office-actions">
       <button type="button" class="btn btn--ghost" id="addRowBtn">➕ הוסף פריט</button>
-      <button type="button" class="btn btn--accent" id="printBtn">🖨️ הדפס רשימה לחיתוך</button>
-      <button type="button" class="btn btn--ghost" id="copyBtn">📋 העתק כטקסט</button>
+      <button type="button" class="btn btn--accent" id="showSummaryBtn">👁️ הצג סיכום להדפסה</button>
       <button type="button" class="btn btn--ghost" id="resetBtn">🗑️ התחלה מחדש</button>
     </div>
     <div class="office-status" id="officeStatus" role="status"></div>
   </div>
 
-  <div id="printSummary">
-    <h1>רשימת פריטים לחיתוך</h1>
+  <div id="summaryView" hidden>
+    <h1>סיכום פריטים לחיתוך</h1>
     <div class="print-meta" id="printDate"></div>
     <table class="print-table">
       <thead><tr><th>#</th><th>צורה</th><th>חומר</th><th>מידות</th><th>מס' יחידות</th></tr></thead>
       <tbody id="printTableBody"></tbody>
     </table>
+    <div class="summary-actions no-print">
+      <button type="button" class="btn btn--accent" id="doPrintBtn">🖨️ הדפס</button>
+      <button type="button" class="btn btn--ghost" id="copyBtn">📋 העתק כטקסט</button>
+      <button type="button" class="btn btn--ghost" id="backToEditBtn">✏️ חזרה לעריכה</button>
+    </div>
   </div>
 </div>
 
@@ -281,6 +286,31 @@
     return null;
   }
 
+  // Positional fallback for the "קוטר פנימי / קוטר חיצוני / אורך" table used
+  // by this raw-material system: when the Hebrew labels themselves are too
+  // OCR-garbled to match by regex (e.g. "אורך" misread as "אירר"), fall back
+  // to the fixed row order - each row ends in an "mm" unit, and the table
+  // always lists inner diameter, then outer diameter, then length, in that
+  // order - and read the last two "mm" rows as [outer diameter, length].
+  function findMmRowBboxes(ocrData) {
+    if (!ocrData) return [];
+    const lines = flattenOcrLines(ocrData);
+    const rows = [];
+    for (const line of lines) {
+      if (!/mm/i.test(line.text)) continue;
+      const words = (line.words || []).filter((w) => /\d/.test(w.text));
+      let best = null;
+      for (const w of words) {
+        const cleaned = w.text.replace(/[^\d.,]/g, '');
+        if (cleaned && (!best || cleaned.length > best.cleaned.length)) {
+          best = { bbox: w.bbox, cleaned };
+        }
+      }
+      if (best) rows.push(best.bbox);
+    }
+    return rows;
+  }
+
   function findNumberNear(text, label) {
     const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
@@ -338,10 +368,14 @@
   const rows = [];
   const itemsList = document.getElementById('itemsList');
   const addRowBtn = document.getElementById('addRowBtn');
-  const printBtn = document.getElementById('printBtn');
+  const showSummaryBtn = document.getElementById('showSummaryBtn');
+  const doPrintBtn = document.getElementById('doPrintBtn');
   const copyBtn = document.getElementById('copyBtn');
+  const backToEditBtn = document.getElementById('backToEditBtn');
   const resetBtn = document.getElementById('resetBtn');
   const officeStatus = document.getElementById('officeStatus');
+  const editView = document.getElementById('editView');
+  const summaryView = document.getElementById('summaryView');
 
   function rowTemplate() {
     return `
@@ -598,6 +632,20 @@
         const genericBbox = findLabelNumberBbox(ocrData, /קוטר/);
         if (genericBbox) outerDiameter = await recognizeNumberInRegion(canvas, genericBbox);
       }
+
+      // Last resort for a rod-style table: the labels themselves may be too
+      // OCR-garbled to match by regex at all (not just missing a space -
+      // "אורך" misread as "אירר" for example). Only try this when there's
+      // no sign we're looking at a plate's H/W table instead.
+      if ((!outerDiameter || !length) && !hBbox && !wBbox) {
+        const mmRows = findMmRowBboxes(ocrData);
+        if (mmRows.length >= 1 && !length) {
+          length = await recognizeNumberInRegion(canvas, mmRows[mmRows.length - 1]);
+        }
+        if (mmRows.length >= 2 && !outerDiameter) {
+          outerDiameter = await recognizeNumberInRegion(canvas, mmRows[mmRows.length - 2]);
+        }
+      }
     }
 
     if (!outerDiameter) outerDiameter = findNumberNear(text, 'קוטר חיצוני') || findNumberNear(text, 'קוטר');
@@ -726,14 +774,16 @@
   }
 
   // ============================================================
-  // Print
+  // Summary / print
   // ============================================================
   const printDate = document.getElementById('printDate');
   const printTableBody = document.getElementById('printTableBody');
+  let lastSummaryItems = [];
 
-  printBtn.addEventListener('click', () => {
+  showSummaryBtn.addEventListener('click', () => {
     const items = getValidatedItems();
     if (!items) return;
+    lastSummaryItems = items;
 
     printDate.textContent = 'תאריך: ' + new Date().toLocaleString('he-IL');
     printTableBody.innerHTML = items.map((item, i) => `
@@ -746,12 +796,22 @@
       </tr>
     `).join('');
 
+    editView.hidden = true;
+    summaryView.hidden = false;
+  });
+
+  doPrintBtn.addEventListener('click', () => {
     window.print();
   });
 
+  backToEditBtn.addEventListener('click', () => {
+    summaryView.hidden = true;
+    editView.hidden = false;
+  });
+
   copyBtn.addEventListener('click', async () => {
-    const items = getValidatedItems();
-    if (!items) return;
+    const items = lastSummaryItems;
+    if (!items.length) return;
 
     const lines = ['רשימת פריטים לחיתוך', ''];
     items.forEach((item, i) => {
@@ -766,7 +826,8 @@
 
     try {
       await navigator.clipboard.writeText(text);
-      officeStatus.textContent = '✅ הועתק ללוח.';
+      copyBtn.textContent = '✅ הועתק!';
+      setTimeout(() => { copyBtn.textContent = '📋 העתק כטקסט'; }, 1800);
     } catch (e) {
       alert('לא ניתן להעתיק אוטומטית. יש להעתיק ידנית:\n\n' + text);
     }
