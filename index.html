@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>טופס הזמנת חומר לחיתוך</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f4f5f7;
+    margin: 0;
+    padding: 40px 20px;
+    direction: rtl;
+  }
+  .container {
+    max-width: 620px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    padding: 32px;
+  }
+  h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+    color: #1f2937;
+    text-align: center;
+  }
+  h2 {
+    font-size: 18px;
+    color: #1f2937;
+  }
+  .field {
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #374151;
+  }
+  .hint {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+  select, input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+    background: #fff;
+  }
+  select:focus, input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+  }
+  .dims-group {
+    display: none;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 8px;
+  }
+  .dims-group.active {
+    display: block;
+  }
+  .dims-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .dims-row .sub-field {
+    flex: 1;
+    min-width: 90px;
+  }
+  .dims-row .sub-field label {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button:hover {
+    background-color: #1d4ed8;
+  }
+  button.secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+  }
+  button.secondary:hover {
+    background-color: #d1d5db;
+  }
+  button:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+  }
+
+  .item-counter {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4338ca;
+    background: #eef2ff;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 20px;
+  }
+
+  .action-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .action-row button {
+    margin-top: 0;
+  }
+
+  .ocr-box {
+    background: #eef2ff;
+    border: 1px dashed #a5b4fc;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 28px;
+  }
+  .ocr-box h2 {
+    font-size: 16px;
+    margin: 0 0 10px 0;
+    color: #3730a3;
+  }
+  .ocr-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .ocr-controls input[type="file"] {
+    flex: 1;
+    min-width: 180px;
+    font-size: 13px;
+  }
+  .ocr-controls button {
+    width: auto;
+    padding: 10px 16px;
+    font-size: 14px;
+    margin-top: 0;
+    background-color: #4338ca;
+  }
+  .ocr-controls button:hover {
+    background-color: #3730a3;
+  }
+  #imgPreview {
+    max-width: 100%;
+    max-height: 220px;
+    margin-top: 12px;
+    border-radius: 8px;
+    border: 1px solid #c7d2fe;
+    display: none;
+  }
+  #ocrStatus {
+    font-size: 13px;
+    color: #4338ca;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+  #ocrRawWrap {
+    margin-top: 14px;
+    display: none;
+  }
+  #ocrRawWrap label {
+    font-size: 13px;
+    color: #4338ca;
+    margin-bottom: 4px;
+  }
+  #ocrRaw {
+    width: 100%;
+    min-height: 90px;
+    font-size: 13px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #c7d2fe;
+    direction: rtl;
+    font-family: monospace;
+    resize: vertical;
+  }
+  #ocrApply {
+    margin-top: 10px;
+    background-color: #059669;
+  }
+  #ocrApply:hover {
+    background-color: #047857;
+  }
+  .ocr-warning {
+    font-size: 12px;
+    color: #92400e;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-top: 10px;
+    display: none;
+  }
+  #pasteZone {
+    margin-top: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 2px dashed #a5b4fc;
+    border-radius: 8px;
+    color: #4338ca;
+    font-size: 14px;
+    background: #f5f5ff;
+    cursor: pointer;
+    outline: none;
+  }
+  #pasteZone:focus {
+    border-color: #4338ca;
+    background: #e9e9ff;
+  }
+  #pasteZone.dragover {
+    border-color: #4338ca;
+    background: #e9e9ff;
+  }
+
+  /* Summary */
+  #summarySection {
+    display: none;
+  }
+  table.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  table.summary-table th, table.summary-table td {
+    border: 1px solid #d1d5db;
+    padding: 8px 10px;
+    text-align: right;
+  }
+  table.summary-table th {
+    background: #eef2ff;
+    color: #3730a3;
+  }
+  table.summary-table tr:nth-child(even) {
+    background: #f9fafb;
+  }
+  .summary-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .summary-actions button {
+    flex: 1;
+    min-width: 140px;
+    margin-top: 0;
+  }
+  .empty-state {
+    text-align: center;
+    color: #6b7280;
+    padding: 20px;
+    font-size: 14px;
+  }
+  @media print {
+    .ocr-box, .item-counter, #currentFormWrapper, .summary-actions {
+      display: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>טופס הזמנת חומר לחיתוך</h1>
+  <p class="hint" style="text-align:center;">ניתן למלא מספר פריטים (עד 10) ולסיים עם סיכום מסודר לשליחה לעובד החיתוך</p>
+
+  <div id="currentFormWrapper">
+
+    <div class="ocr-box">
+      <h2>מילוי אוטומטי מתמונה (OCR)</h2>
+      <p class="hint" style="margin-top:-4px;">ניתן להעלות קובץ, או פשוט להדביק צילום מסך (Ctrl+V) בכל מקום בעמוד</p>
+      <div class="ocr-controls">
+        <input type="file" id="imgInput" accept="image/*">
+        <button type="button" id="runOcrBtn" disabled>זהה טקסט מהתמונה</button>
+      </div>
+      <div id="pasteZone" tabindex="0">לחץ כאן ואז הדבק תמונה (Ctrl+V)</div>
+      <img id="imgPreview" alt="תצוגה מקדימה">
+      <div id="ocrStatus"></div>
+      <div class="ocr-warning" id="ocrWarning">⚠️ שים לב: יש לבדוק את השדות המספריים (קוטר / אורך) - זיהוי אוטומטי לעולם אינו מובטח ב-100%.</div>
+      <div id="ocrRawWrap">
+        <label for="ocrRaw">טקסט שזוהה (ניתן לתקן ידנית לפני מילוי אוטומטי):</label>
+        <textarea id="ocrRaw"></textarea>
+        <button type="button" id="ocrApply">מלא את הטופס לפי הטקסט</button>
+      </div>
+    </div>
+
+    <div class="item-counter" id="itemCounterLabel">פריט מספר 1 (עד 10 פריטים)</div>
+
+    <form id="materialForm">
+
+      <div class="field">
+        <label for="shape">צורה</label>
+        <select id="shape" name="shape" required>
+          <option value="">בחר צורה</option>
+          <option value="מוט">מוט</option>
+          <option value="פלטה">פלטה</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="material">חומר</label>
+        <input type="text" id="material" name="material" placeholder="לדוגמה: AISI 303, אלומיניום..." required>
+      </div>
+
+      <div class="field">
+        <label>מידות</label>
+
+        <div class="dims-group" id="dimsPlate">
+          <div class="dims-row">
+            <div class="sub-field">
+              <label for="h_plate">H (גובה)</label>
+              <input type="number" step="any" id="h_plate" name="h_plate">
+            </div>
+            <div class="sub-field">
+              <label for="w_plate">W (רוחב)</label>
+              <input type="number" step="any" id="w_plate" name="w_plate">
+            </div>
+            <div class="sub-field">
+              <label for="l_plate">L (אורך)</label>
+              <input type="number" step="any" id="l_plate" name="l_plate">
+            </div>
+          </div>
+        </div>
+
+        <div class="dims-group" id="dimsRod">
+          <div class="dims-row">
+            <div class="sub-field">
+              <label for="diameter_rod">קוטר</label>
+              <input type="number" step="any" id="diameter_rod" name="diameter_rod">
+            </div>
+            <div class="sub-field">
+              <label for="l_rod">L (אורך)</label>
+              <input type="number" step="any" id="l_rod" name="l_rod">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="units">מס' יחידות</label>
+        <input type="number" id="units" name="units" min="1" required>
+      </div>
+
+    </form>
+
+    <div class="action-row">
+      <button type="button" id="addAnotherBtn">➕ שמור פריט והוסף פריט נוסף</button>
+      <button type="button" id="finishBtn" class="secondary">✅ סיימתי – הצג סיכום</button>
+    </div>
+  </div>
+
+  <div id="summarySection">
+    <h2>סיכום פריטים לחיתוך</h2>
+    <div id="summaryTableWrap"></div>
+    <div class="summary-actions">
+      <button type="button" id="copySummaryBtn">📋 העתק כטקסט</button>
+      <button type="button" id="printSummaryBtn">🖨️ הדפסה</button>
+      <button type="button" id="backToEditBtn" class="secondary">➕ חזרה והוספת פריט</button>
+      <button type="button" id="resetAllBtn" class="secondary">🗑️ התחלה מחדש</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
+<script>
+  // ============================================================
+  // OCR: image upload / paste / recognition
+  // ============================================================
+  const imgInput = document.getElementById('imgInput');
+  const imgPreview = document.getElementById('imgPreview');
+  const runOcrBtn = document.getElementById('runOcrBtn');
+  const ocrStatus = document.getElementById('ocrStatus');
+  const ocrWarning = document.getElementById('ocrWarning');
+  const ocrRawWrap = document.getElementById('ocrRawWrap');
+  const ocrRaw = document.getElementById('ocrRaw');
+  const ocrApplyBtn = document.getElementById('ocrApply');
+  const pasteZone = document.getElementById('pasteZone');
+
+  let selectedFile = null;
+
+  function handleImageFile(file) {
+    if (!file) return;
+    selectedFile = file;
+    const url = URL.createObjectURL(selectedFile);
+    imgPreview.src = url;
+    imgPreview.style.display = 'block';
+    runOcrBtn.disabled = false;
+    ocrStatus.textContent = 'תמונה נטענה. לוחצים על "זהה טקסט מהתמונה".';
+    ocrWarning.style.display = 'none';
+    ocrRawWrap.style.display = 'none';
+  }
+
+  imgInput.addEventListener('change', function() {
+    const file = this.files && this.files[0] ? this.files[0] : null;
+    if (file) handleImageFile(file);
+    else runOcrBtn.disabled = true;
+  });
+
+  function extractImageFromClipboard(clipboardData) {
+    if (!clipboardData || !clipboardData.items) return null;
+    for (const item of clipboardData.items) {
+      if (item.type && item.type.indexOf('image') !== -1) return item.getAsFile();
+    }
+    return null;
+  }
+
+  document.addEventListener('paste', function(e) {
+    const file = extractImageFromClipboard(e.clipboardData || window.clipboardData);
+    if (file) {
+      e.preventDefault();
+      handleImageFile(file);
+      pasteZone.textContent = 'התמונה הודבקה בהצלחה ✓';
+      setTimeout(() => { pasteZone.textContent = 'לחץ כאן ואז הדבק תמונה (Ctrl+V)'; }, 2000);
+    }
+  });
+
+  pasteZone.addEventListener('focus', () => pasteZone.classList.add('dragover'));
+  pasteZone.addEventListener('blur', () => pasteZone.classList.remove('dragover'));
+  pasteZone.addEventListener('dragover', (e) => { e.preventDefault(); pasteZone.classList.add('dragover'); });
+  pasteZone.addEventListener('dragleave', () => pasteZone.classList.remove('dragover'));
+  pasteZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    pasteZone.classList.remove('dragover');
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file && file.type.indexOf('image') !== -1) handleImageFile(file);
+  });
+
+  // ---------- Image preprocessing (upscale for better OCR accuracy) ----------
+  function loadImageElement(file) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  async function buildPreprocessedCanvas(file, scale) {
+    const img = await loadImageElement(file);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(img.width * scale);
+    canvas.height = Math.round(img.height * scale);
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return canvas;
+  }
+
+  // ---------- Focused re-scan of a small region to get a clean number ----------
+  // Cropping tightly around a single WORD (not a whole table line/row) matters:
+  // a table row's bbox also contains the Hebrew label text, and re-recognizing
+  // that whole strip with a digit-only whitelist can make the engine "invent"
+  // extra digits from label glyphs or swallow the tiny decimal point entirely
+  // (e.g. "12.7" coming back as "127"). A word-level bbox avoids that noise.
+  async function recognizeNumberInRegion(canvas, bbox) {
+    const pad = 8;
+    const x = Math.max(0, Math.floor(bbox.x0 - pad));
+    const y = Math.max(0, Math.floor(bbox.y0 - pad));
+    const w = Math.min(canvas.width - x, Math.ceil((bbox.x1 - bbox.x0) + pad * 2));
+    const h = Math.min(canvas.height - y, Math.ceil((bbox.y1 - bbox.y0) + pad * 2));
+    if (w <= 0 || h <= 0) return null;
+
+    const upscale = 4;
+    const crop = document.createElement('canvas');
+    crop.width = w * upscale;
+    crop.height = h * upscale;
+    const cctx = crop.getContext('2d');
+    cctx.imageSmoothingEnabled = true;
+    cctx.imageSmoothingQuality = 'high';
+    cctx.drawImage(canvas, x, y, w, h, 0, 0, crop.width, crop.height);
+
+    try {
+      const { data } = await Tesseract.recognize(crop, 'eng', {
+        tessedit_char_whitelist: '0123456789.,'
+      });
+      const cleaned = data.text.replace(/\s+/g, '');
+      const match = cleaned.match(/\d+[.,]?\d*/);
+      return match ? match[0].replace(',', '.') : null;
+    } catch (e) {
+      console.warn('region OCR failed', e);
+      return null;
+    }
+  }
+
+  runOcrBtn.addEventListener('click', async function() {
+    if (!selectedFile) return;
+    runOcrBtn.disabled = true;
+    ocrWarning.style.display = 'none';
+    ocrStatus.textContent = 'מעבד את התמונה...';
+
+    try {
+      const canvas = await buildPreprocessedCanvas(selectedFile, 2.5);
+      ocrStatus.textContent = 'מזהה טקסט מהתמונה...';
+
+      const { data } = await Tesseract.recognize(canvas, 'heb+eng', {
+        logger: (m) => {
+          if (m.status && typeof m.progress === 'number') {
+            ocrStatus.textContent = `${translateStatus(m.status)} ${(m.progress * 100).toFixed(0)}%`;
+          }
+        }
+      });
+
+      ocrRaw.value = data.text.trim();
+      ocrRawWrap.style.display = 'block';
+
+      ocrStatus.textContent = 'מדייק ערכים מספריים...';
+      await applyOcrToForm(data.text, data, canvas);
+
+      ocrStatus.textContent = 'זיהוי הושלם. בדוק את השדות ותקן במידת הצורך.';
+      ocrWarning.style.display = 'block';
+    } catch (err) {
+      console.error(err);
+      ocrStatus.textContent = 'אירעה שגיאה בזיהוי הטקסט. נסה תמונה ברורה יותר.';
+    } finally {
+      runOcrBtn.disabled = false;
+    }
+  });
+
+  function translateStatus(status) {
+    const map = {
+      'loading tesseract core': 'טוען מנוע זיהוי',
+      'initializing tesseract': 'מאתחל',
+      'loading language traineddata': 'טוען שפה',
+      'initializing api': 'מאתחל ממשק',
+      'recognizing text': 'מזהה טקסט'
+    };
+    return map[status] || status;
+  }
+
+  ocrApplyBtn.addEventListener('click', function() {
+    applyOcrToForm(ocrRaw.value, null, null);
+  });
+
+  // ============================================================
+  // Parsing logic
+  // ============================================================
+
+  // Finds the Hebrew label's own text line, then returns the bbox of the
+  // numeric word on that same line (never the whole line/row bbox) so the
+  // focused re-scan above only ever sees the digits themselves.
+  function findRowNumberBbox(ocrData, labelRegex) {
+    if (!ocrData || !ocrData.lines) return null;
+    for (const line of ocrData.lines) {
+      if (!labelRegex.test(line.text)) continue;
+      const words = (line.words || []).filter(w => /\d/.test(w.text));
+      let best = null;
+      for (const w of words) {
+        const cleaned = w.text.replace(/[^\d.,]/g, '');
+        if (cleaned && (!best || cleaned.length > best.cleaned.length)) {
+          best = { bbox: w.bbox, cleaned };
+        }
+      }
+      if (best) return best.bbox;
+    }
+    return null;
+  }
+
+  async function applyOcrToForm(rawText, ocrData, canvas) {
+    const text = rawText.replace(/\r/g, '');
+
+    // Shape detection
+    if (/מוט/.test(text)) {
+      shapeSelect.value = 'מוט';
+      shapeSelect.dispatchEvent(new Event('change'));
+    } else if (/פלטה/.test(text)) {
+      shapeSelect.value = 'פלטה';
+      shapeSelect.dispatchEvent(new Event('change'));
+    }
+
+    // Material detection (AISI codes etc.)
+    const materialMatch = text.match(/AISI\s*[- ]?\s*\d+/i);
+    if (materialMatch) {
+      document.getElementById('material').value = materialMatch[0].toUpperCase().replace(/\s+/g, ' ');
+    }
+
+    function findNumberNear(label) {
+      const lines = text.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(label)) {
+          const candidates = [lines[i], lines[i + 1] || ''];
+          for (const line of candidates) {
+            const m = line.match(/(\d+(?:[.,]\d+)?)/);
+            if (m) return m[1].replace(',', '.');
+          }
+        }
+      }
+      return null;
+    }
+
+    let outerDiameter = null;
+    let length = null;
+    let hVal = null;
+    let wVal = null;
+
+    // Precise refinement using per-word bounding boxes: re-scan just the
+    // numeric word next to each Hebrew label at high resolution. This avoids
+    // issues like "12.7" being misread as "127" or "250.0" losing its
+    // decimal point, which happened when the whole table row (label + value
+    // + unit) was re-scanned together as one blob.
+    if (ocrData && canvas) {
+      const outerBbox = findRowNumberBbox(ocrData, /קוטר\s*חיצוני/);
+      const innerBbox = findRowNumberBbox(ocrData, /קוטר\s*פנימי/);
+      const lengthBbox = findRowNumberBbox(ocrData, /אורך|ארוך/);
+      const hBbox = findRowNumberBbox(ocrData, /גובה/);
+      const wBbox = findRowNumberBbox(ocrData, /רוחב/);
+
+      if (outerBbox) outerDiameter = await recognizeNumberInRegion(canvas, outerBbox);
+      if (lengthBbox) length = await recognizeNumberInRegion(canvas, lengthBbox);
+      if (hBbox) hVal = await recognizeNumberInRegion(canvas, hBbox);
+      if (wBbox) wVal = await recognizeNumberInRegion(canvas, wBbox);
+
+      // If there is only a generic "קוטר" row (no פנימי/חיצוני split), and we
+      // still don't have an outer diameter, fall back to it - but never to
+      // the inner-diameter row.
+      if (!outerDiameter && !innerBbox) {
+        const genericBbox = findRowNumberBbox(ocrData, /קוטר/);
+        if (genericBbox) outerDiameter = await recognizeNumberInRegion(canvas, genericBbox);
+      }
+    }
+
+    // Fallback to plain text search if bbox refinement did not produce values
+    if (!outerDiameter) outerDiameter = findNumberNear('קוטר חיצוני') || findNumberNear('קוטר');
+    if (!length) length = findNumberNear('אורך') || findNumberNear('ארוך');
+    if (!hVal) hVal = findNumberNear(' H ') || findNumberNear('גובה');
+    if (!wVal) wVal = findNumberNear(' W ') || findNumberNear('רוחב');
+
+    if (outerDiameter) document.getElementById('diameter_rod').value = outerDiameter;
+    if (length) {
+      document.getElementById('l_rod').value = length;
+      document.getElementById('l_plate').value = length;
+    }
+    if (hVal) document.getElementById('h_plate').value = hVal;
+    if (wVal) document.getElementById('w_plate').value = wVal;
+
+    // Units / quantity
+    const unitsMatch = text.match(/(?:מס['׳]?\s*יחיד|כמות)[^\d]{0,10}(\d+)/);
+    if (unitsMatch) {
+      document.getElementById('units').value = unitsMatch[1];
+    }
+  }
+
+  // ============================================================
+  // Form shape toggle
+  // ============================================================
+  const shapeSelect = document.getElementById('shape');
+  const dimsPlate = document.getElementById('dimsPlate');
+  const dimsRod = document.getElementById('dimsRod');
+
+  shapeSelect.addEventListener('change', function() {
+    dimsPlate.classList.remove('active');
+    dimsRod.classList.remove('active');
+    if (this.value === 'פלטה') dimsPlate.classList.add('active');
+    else if (this.value === 'מוט') dimsRod.classList.add('active');
+  });
+
+  // ============================================================
+  // Multi-item workflow
+  // ============================================================
+  const MAX_ITEMS = 10;
+  let savedItems = [];
+
+  const itemCounterLabel = document.getElementById('itemCounterLabel');
+  const addAnotherBtn = document.getElementById('addAnotherBtn');
+  const finishBtn = document.getElementById('finishBtn');
+  const currentFormWrapper = document.getElementById('currentFormWrapper');
+  const summarySection = document.getElementById('summarySection');
+  const summaryTableWrap = document.getElementById('summaryTableWrap');
+
+  function updateCounterLabel() {
+    const next = Math.min(savedItems.length + 1, MAX_ITEMS);
+    itemCounterLabel.textContent = `פריט מספר ${next} מתוך עד ${MAX_ITEMS}${savedItems.length > 0 ? ' | פריטים שנשמרו: ' + savedItems.length : ''}`;
+    addAnotherBtn.disabled = savedItems.length >= MAX_ITEMS;
+  }
+
+  function isCurrentFormEmpty() {
+    const shape = document.getElementById('shape').value;
+    const material = document.getElementById('material').value.trim();
+    const units = document.getElementById('units').value;
+    return !shape && !material && !units;
+  }
+
+  function collectCurrentFormData(showAlerts) {
+    const shape = document.getElementById('shape').value;
+    const material = document.getElementById('material').value.trim();
+    const units = document.getElementById('units').value;
+
+    if (!shape || !material || !units) {
+      if (showAlerts) alert('נא למלא לפחות: צורה, חומר ומס\' יחידות לפני שמירת הפריט.');
+      return null;
+    }
+
+    let dims = {};
+    let dimsText = '';
+    if (shape === 'פלטה') {
+      const h = document.getElementById('h_plate').value;
+      const w = document.getElementById('w_plate').value;
+      const l = document.getElementById('l_plate').value;
+      dims = { h, w, l };
+      dimsText = `H: ${h || '-'} | W: ${w || '-'} | L: ${l || '-'} מ"מ`;
+    } else if (shape === 'מוט') {
+      const d = document.getElementById('diameter_rod').value;
+      const l = document.getElementById('l_rod').value;
+      dims = { d, l };
+      dimsText = `קוטר: ${d || '-'} | אורך: ${l || '-'} מ"מ`;
+    }
+
+    return { shape, material, units, dims, dimsText };
+  }
+
+  function resetCurrentForm() {
+    document.getElementById('materialForm').reset();
+    dimsPlate.classList.remove('active');
+    dimsRod.classList.remove('active');
+
+    selectedFile = null;
+    imgPreview.style.display = 'none';
+    imgPreview.src = '';
+    runOcrBtn.disabled = true;
+    ocrStatus.textContent = '';
+    ocrWarning.style.display = 'none';
+    ocrRawWrap.style.display = 'none';
+    ocrRaw.value = '';
+    imgInput.value = '';
+  }
+
+  addAnotherBtn.addEventListener('click', function() {
+    if (savedItems.length >= MAX_ITEMS) {
+      alert(`הגעת למספר המרבי של פריטים (${MAX_ITEMS}). ניתן ללחוץ על "סיימתי - הצג סיכום".`);
+      return;
+    }
+    const data = collectCurrentFormData(true);
+    if (!data) return;
+    savedItems.push(data);
+    resetCurrentForm();
+    updateCounterLabel();
+  });
+
+  finishBtn.addEventListener('click', function() {
+    if (!isCurrentFormEmpty()) {
+      const data = collectCurrentFormData(true);
+      if (!data) return; // form partially filled and invalid - block until fixed or cleared
+      savedItems.push(data);
+      resetCurrentForm();
+    }
+
+    if (savedItems.length === 0) {
+      alert('לא נשמר עדיין אף פריט. נא למלא לפחות פריט אחד.');
+      return;
+    }
+
+    renderSummary();
+    currentFormWrapper.style.display = 'none';
+    summarySection.style.display = 'block';
+  });
+
+  function renderSummary() {
+    if (savedItems.length === 0) {
+      summaryTableWrap.innerHTML = '<div class="empty-state">לא נשמרו פריטים.</div>';
+      return;
+    }
+
+    let html = '<table class="summary-table"><thead><tr>' +
+      '<th>#</th><th>צורה</th><th>חומר</th><th>מידות</th><th>מס\' יחידות</th>' +
+      '</tr></thead><tbody>';
+
+    savedItems.forEach((item, idx) => {
+      html += `<tr>
+        <td>${idx + 1}</td>
+        <td>${escapeHtml(item.shape)}</td>
+        <td>${escapeHtml(item.material)}</td>
+        <td>${escapeHtml(item.dimsText)}</td>
+        <td>${escapeHtml(item.units)}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    html += `<p class="hint">סה"כ פריטים: ${savedItems.length}</p>`;
+    summaryTableWrap.innerHTML = html;
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function buildSummaryText() {
+    let lines = ['סיכום פריטים לחיתוך', ''];
+    savedItems.forEach((item, idx) => {
+      lines.push(`פריט ${idx + 1}:`);
+      lines.push(`  צורה: ${item.shape}`);
+      lines.push(`  חומר: ${item.material}`);
+      lines.push(`  מידות: ${item.dimsText}`);
+      lines.push(`  מס' יחידות: ${item.units}`);
+      lines.push('');
+    });
+    lines.push(`סה"כ פריטים: ${savedItems.length}`);
+    return lines.join('\n');
+  }
+
+  document.getElementById('copySummaryBtn').addEventListener('click', async function() {
+    const text = buildSummaryText();
+    try {
+      await navigator.clipboard.writeText(text);
+      this.textContent = '✅ הועתק!';
+      setTimeout(() => { this.textContent = '📋 העתק כטקסט'; }, 1800);
+    } catch (e) {
+      alert('לא ניתן להעתיק אוטומטית. יש להעתיק ידנית:\n\n' + text);
+    }
+  });
+
+  document.getElementById('printSummaryBtn').addEventListener('click', function() {
+    window.print();
+  });
+
+  document.getElementById('backToEditBtn').addEventListener('click', function() {
+    summarySection.style.display = 'none';
+    currentFormWrapper.style.display = 'block';
+    updateCounterLabel();
+  });
+
+  document.getElementById('resetAllBtn').addEventListener('click', function() {
+    if (!confirm('לאפס את כל הפריטים שנשמרו ולהתחיל מחדש?')) return;
+    savedItems = [];
+    resetCurrentForm();
+    updateCounterLabel();
+    summarySection.style.display = 'none';
+    currentFormWrapper.style.display = 'block';
+  });
+
+  // init
+  updateCounterLabel();
+</script>
+
+</body>
+</html>
